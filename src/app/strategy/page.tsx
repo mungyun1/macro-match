@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { BacktestResult, ETF } from "@/types";
 
+import PortfolioPerformanceChart from "@/components/PortfolioPerformanceChart";
+
 interface SimulationSettings {
   startDate: string;
   endDate: string;
@@ -511,22 +513,10 @@ export default function StrategySimulatorPage() {
                 </div>
 
                 {/* 성과 차트 */}
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    포트폴리오 성과
-                  </h2>
-                  <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
-                    <div className="text-center">
-                      <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-600">
-                        성과 차트가 여기에 표시됩니다
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        실제 구현에서는 Chart.js나 Recharts 등을 사용
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <PortfolioPerformanceChart
+                  performanceData={simulationResult.performanceData}
+                  initialInvestment={settings.initialInvestment}
+                />
 
                 {/* 전략 세부 정보 */}
                 <div className="bg-white rounded-lg shadow-md p-6">

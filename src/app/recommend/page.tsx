@@ -4,7 +4,14 @@ import { useState } from "react";
 import ETFCard from "@/components/ETFCard";
 import Header from "@/components/Header";
 import { ETF } from "@/types";
-import { Search, Filter, Info, ChevronDown, TrendingUp } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Info,
+  ChevronDown,
+  TrendingUp,
+  Target,
+} from "lucide-react";
 
 export default function RecommendPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,6 +114,16 @@ export default function RecommendPage() {
       <Header currentPage="etf" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <Target className="h-8 w-8 text-blue-600 mr-3" />
+            <h1 className="text-3xl font-bold text-gray-900">ETF 추천</h1>
+          </div>
+          <p className="text-lg text-gray-600">
+            투자 목적과 위험 성향에 맞는 최적의 ETF를 찾아보세요. 검증된
+            데이터를 기반으로 맞춤형 ETF 포트폴리오를 추천해드립니다.
+          </p>
+        </div>
         {/* 시장 분석 카드 */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-8 border border-blue-100">
           <div className="flex items-start">

@@ -10,6 +10,7 @@ import {
   Calendar,
   Target,
   AlertCircle,
+  BarChart3,
 } from "lucide-react";
 import { MacroIndicator, ChartData } from "@/types";
 import Header from "@/components/Header";
@@ -158,6 +159,17 @@ export default function AnalysisPage() {
 
       {/* 메인 컨텐츠 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
+            <h1 className="text-3xl font-bold text-gray-900">지표 분석</h1>
+          </div>
+          <p className="text-lg text-gray-600">
+            주요 경제 지표와 시장 데이터를 분석하여 투자 의사결정에 필요한
+            인사이트를 얻어보세요.
+          </p>
+        </div>
+
         {/* 필터 및 컨트롤 */}
         <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
