@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ETF } from "@/types";
 import {
   TrendingUp,
@@ -15,6 +16,15 @@ interface ETFCardProps {
 }
 
 export default function ETFCard({ etf, onSelect }: ETFCardProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (onSelect) {
+      onSelect(etf);
+    } else {
+      router.push(`/recommend/${etf.id}`);
+    }
+  };
   const getRiskIcon = () => {
     switch (etf.risk) {
       case "low":
@@ -53,7 +63,7 @@ export default function ETFCard({ etf, onSelect }: ETFCardProps) {
   return (
     <div
       className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-all cursor-pointer border border-gray-200 hover:border-blue-300 active:scale-95"
-      onClick={() => onSelect?.(etf)}
+      onClick={handleClick}
     >
       <div className="flex justify-between items-start mb-3 sm:mb-4">
         <div className="flex-1 min-w-0">

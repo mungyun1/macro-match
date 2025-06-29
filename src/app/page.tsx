@@ -1,22 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useMacroStore } from "@/store/macroStore";
 import MacroIndicatorCard from "@/components/MacroIndicatorCard";
 import ETFCard from "@/components/ETFCard";
-import {
-  BarChart3,
-  TrendingUp,
-  DollarSign,
-  AlertCircle,
-  Menu,
-  X,
-} from "lucide-react";
+import { BarChart3, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
+import Header from "@/components/Header";
 
 export default function Home() {
   const { indicators, featuredETFs, isLoading, error, fetchMacroData } =
     useMacroStore();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchMacroData();
@@ -55,101 +48,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4 sm:py-6">
-            <div className="flex items-center">
-              <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mr-2 sm:mr-3" />
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                MacroMatch
-              </h1>
-            </div>
-
-            {/* 데스크톱 네비게이션 */}
-            <nav className="hidden md:flex space-x-8">
-              <a
-                href="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                지표 분석
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                ETF 추천
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                전략 시뮬레이터
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                마이페이지
-              </a>
-            </nav>
-
-            {/* 모바일 햄버거 메뉴 버튼 */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
-
-          {/* 모바일 네비게이션 메뉴 */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 py-4">
-              <nav className="flex flex-col space-y-4">
-                <a
-                  href="#"
-                  className="text-gray-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  홈
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  지표 분석
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  ETF 추천
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  전략 시뮬레이터
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-md hover:bg-gray-50"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  마이페이지
-                </a>
-              </nav>
-            </div>
-          )}
-        </div>
-      </header>
+      <Header />
 
       {/* 메인 컨텐츠 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">

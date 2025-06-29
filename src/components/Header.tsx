@@ -46,15 +46,15 @@ export default function Header({ currentPage = "home" }: HeaderProps) {
             <Link href="/analysis" className={getNavItemClass("analysis")}>
               지표 분석
             </Link>
-            <a href="#" className={getNavItemClass("etf")}>
+            <Link href="/recommend" className={getNavItemClass("etf")}>
               ETF 추천
-            </a>
-            <a href="#" className={getNavItemClass("strategy")}>
+            </Link>
+            <Link href="#" className={getNavItemClass("strategy")}>
               전략 시뮬레이터
-            </a>
-            <a href="#" className={getNavItemClass("profile")}>
+            </Link>
+            <Link href="#" className={getNavItemClass("profile")}>
               마이페이지
-            </a>
+            </Link>
           </nav>
 
           {/* 모바일 햄버거 메뉴 버튼 */}
@@ -88,13 +88,13 @@ export default function Header({ currentPage = "home" }: HeaderProps) {
               >
                 지표 분석
               </Link>
-              <a
-                href="#"
+              <Link
+                href="/recommend"
                 className={getMobileNavItemClass("etf")}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 ETF 추천
-              </a>
+              </Link>
               <a
                 href="#"
                 className={getMobileNavItemClass("strategy")}
