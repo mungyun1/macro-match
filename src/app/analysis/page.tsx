@@ -15,18 +15,31 @@ import { MacroIndicator, ChartData } from "@/types";
 import Header from "@/components/Header";
 
 export default function AnalysisPage() {
-  const { indicators, isLoading, error, fetchMacroData } = useMacroStore();
+  const {
+    availableIndicators,
+    customIndicators,
+    isLoading,
+    error,
+    fetchMacroData,
+    getDisplayedIndicators,
+    addCustomIndicator,
+    removeCustomIndicator,
+  } = useMacroStore();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedPeriod, setSelectedPeriod] = useState<string>("30d");
   const [selectedIndicator, setSelectedIndicator] =
     useState<MacroIndicator | null>(null);
+  const [showAddIndicator, setShowAddIndicator] = useState<boolean>(false);
 
   useEffect(() => {
     fetchMacroData();
   }, [fetchMacroData]);
 
+  // 표시할 지표들 가져오기
+  const displayedIndicators = getDisplayedIndicators();
+
   // 카테고리별 필터링
-  const filteredIndicators = indicators.filter(
+  const filteredIndicators = displayedIndicators.filter(
     (indicator) =>
       selectedCategory === "all" || indicator.category === selectedCategory
   );
@@ -37,9 +50,15 @@ export default function AnalysisPage() {
     { value: "interest-rate", label: "금리" },
     { value: "inflation", label: "인플레이션" },
     { value: "employment", label: "고용" },
+    { value: "growth", label: "성장" },
+    { value: "housing", label: "주택" },
+    { value: "manufacturing", label: "제조업" },
+    { value: "trade", label: "무역" },
+    { value: "sentiment", label: "시장심리" },
+    { value: "government", label: "정부재정" },
     { value: "energy", label: "에너지" },
     { value: "currency", label: "통화" },
-    { value: "growth", label: "성장" },
+    { value: "market", label: "주식시장" },
   ];
 
   // 기간 옵션
@@ -50,10 +69,10 @@ export default function AnalysisPage() {
     { value: "1y", label: "1년" },
   ];
 
-  // 임시 차트 데이터 생성 함수
+  // 발표 주기에 맞는 차트 데이터 생성 함수
   const generateChartData = (indicator: MacroIndicator): ChartData[] => {
     const data: ChartData[] = [];
-    const days =
+    const totalDays =
       selectedPeriod === "7d"
         ? 7
         : selectedPeriod === "30d"
@@ -62,19 +81,41 @@ export default function AnalysisPage() {
         ? 90
         : 365;
 
-    for (let i = days; i >= 0; i--) {
+    // 지표별 발표 주기에 따른 데이터 포인트 간격 설정
+    const getDataInterval = (frequency: string): number => {
+      switch (frequency) {
+        case "daily":
+          return 1; // 매일
+        case "weekly":
+          return 7; // 주간
+        case "monthly":
+          return 30; // 월간
+        case "quarterly":
+          return 90; // 분기별
+        case "irregular":
+          return 45; // 불규칙 (평균 45일)
+        default:
+          return 30;
+      }
+    };
+
+    const interval = getDataInterval(indicator.frequency || "monthly");
+    const dataPoints = Math.ceil(totalDays / interval);
+
+    for (let i = dataPoints; i >= 0; i--) {
       const date = new Date();
-      date.setDate(date.getDate() - i);
+      date.setDate(date.getDate() - i * interval);
 
       // 실제 데이터 대신 임시 트렌드 데이터 생성
       const baseValue = indicator.previousValue;
-      const variation = (Math.random() - 0.5) * 2 * 0.1; // ±10% 변동
+      const variation = (Math.random() - 0.5) * 2 * 0.05; // ±5% 변동 (더 현실적)
       const trendFactor =
-        ((days - i) / days) * (indicator.value - indicator.previousValue);
+        ((dataPoints - i) / dataPoints) *
+        (indicator.value - indicator.previousValue);
 
       data.push({
         date: date.toISOString(),
-        value: baseValue + trendFactor + variation,
+        value: Math.max(0, baseValue + trendFactor + variation), // 음수 방지
       });
     }
 
@@ -157,7 +198,85 @@ export default function AnalysisPage() {
                 ))}
               </select>
             </div>
+
+            {/* 지표 추가 버튼 */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                지표 관리
+              </label>
+              <button
+                onClick={() => setShowAddIndicator(!showAddIndicator)}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+              >
+                <span className="mr-2">+</span>
+                지표 추가/제거
+              </button>
+            </div>
           </div>
+
+          {/* 지표 추가/제거 패널 */}
+          {showAddIndicator && (
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                추가 가능한 지표
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {availableIndicators.map((indicator) => {
+                  const isAdded = customIndicators.includes(indicator.id);
+                  const frequencyLabel = {
+                    daily: "매일",
+                    weekly: "주간",
+                    monthly: "월간",
+                    quarterly: "분기",
+                    irregular: "비정기",
+                  };
+                  return (
+                    <div
+                      key={indicator.id}
+                      className="flex items-center justify-between p-3 bg-white rounded-lg border"
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-800 text-sm">
+                          {indicator.name}
+                        </h4>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <span>
+                            {
+                              categories.find(
+                                (c) => c.value === indicator.category
+                              )?.label
+                            }
+                          </span>
+                          {indicator.frequency && (
+                            <>
+                              <span>•</span>
+                              <span className="px-2 py-1 bg-gray-100 rounded text-xs">
+                                {frequencyLabel[indicator.frequency]} 발표
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() =>
+                          isAdded
+                            ? removeCustomIndicator(indicator.id)
+                            : addCustomIndicator(indicator.id)
+                        }
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                          isAdded
+                            ? "bg-red-100 text-red-700 hover:bg-red-200"
+                            : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                        }`}
+                      >
+                        {isAdded ? "제거" : "추가"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 지표 요약 */}
@@ -265,7 +384,7 @@ export default function AnalysisPage() {
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
                     분석 결과
                   </h3>
-                  <div className="text-sm text-gray-600 space-y-2">
+                  <div className="text-sm text-gray-600 space-y-3">
                     {selectedIndicator.changeRate > 0 ? (
                       <p>📈 상승 추세를 보이고 있습니다.</p>
                     ) : selectedIndicator.changeRate < 0 ? (
@@ -273,15 +392,60 @@ export default function AnalysisPage() {
                     ) : (
                       <p>📊 안정적인 상태를 유지하고 있습니다.</p>
                     )}
+
+                    {/* 지표 설명 */}
+                    {selectedIndicator.description && (
+                      <div className="p-3 bg-blue-50 rounded-lg">
+                        <p className="text-blue-800 text-sm">
+                          💡 <strong>지표 설명:</strong>{" "}
+                          {selectedIndicator.description}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* 발표 주기 정보 */}
+                    {selectedIndicator.frequency && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">📅 발표 주기:</span>
+                        <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">
+                          {selectedIndicator.frequency === "daily" && "매일"}
+                          {selectedIndicator.frequency === "weekly" && "주간"}
+                          {selectedIndicator.frequency === "monthly" && "월간"}
+                          {selectedIndicator.frequency === "quarterly" &&
+                            "분기별"}
+                          {selectedIndicator.frequency === "irregular" &&
+                            "비정기적"}
+                        </span>
+                      </div>
+                    )}
+
                     <p>
                       이 지표는{" "}
                       {selectedIndicator.category === "interest-rate"
-                        ? "금리 정책"
+                        ? "통화정책과 금리 결정"
                         : selectedIndicator.category === "inflation"
-                        ? "물가 안정성"
+                        ? "물가 안정성과 구매력"
                         : selectedIndicator.category === "employment"
-                        ? "고용 시장"
-                        : "경제 상황"}
+                        ? "노동시장과 고용 상황"
+                        : selectedIndicator.category === "growth"
+                        ? "경제성장과 확장"
+                        : selectedIndicator.category === "housing"
+                        ? "부동산 시장과 주택 경기"
+                        : selectedIndicator.category === "manufacturing"
+                        ? "제조업 활동과 산업 생산"
+                        : selectedIndicator.category === "trade"
+                        ? "대외무역과 국제수지"
+                        : selectedIndicator.category === "sentiment"
+                        ? "투자자 심리와 시장 분위기"
+                        : selectedIndicator.category === "government"
+                        ? "정부 재정건전성"
+                        : selectedIndicator.category === "energy"
+                        ? "에너지 가격과 공급"
+                        : selectedIndicator.category === "currency"
+                        ? "환율과 통화 가치"
+                        : selectedIndicator.category === "market"
+                        ? "주식시장과 투자 환경"
+                        : "전반적인 경제 상황"}
                       에 중요한 영향을 미칩니다.
                     </p>
                   </div>
@@ -294,42 +458,78 @@ export default function AnalysisPage() {
         {/* 상관관계 분석 */}
         <section className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-xl font-bold text-gray-900 mb-6">
-            지표간 상관관계 분석
+            주요 지표 현황 및 상관관계
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {indicators.slice(0, 3).map((indicator) => (
-              <div key={indicator.id} className="text-center">
-                <div className="bg-gray-50 rounded-lg p-4 mb-3">
-                  <h4 className="font-semibold text-gray-800 mb-2">
-                    {indicator.name}
-                  </h4>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {indicator.value.toFixed(2)}
-                    {indicator.unit}
-                  </div>
-                  <div
-                    className={`text-sm mt-1 ${
-                      indicator.changeRate > 0
-                        ? "text-green-600"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 다양한 카테고리에서 대표 지표들 선택 */}
+            {[
+              displayedIndicators.find((i) => i.category === "interest-rate"),
+              displayedIndicators.find((i) => i.category === "inflation"),
+              displayedIndicators.find((i) => i.category === "employment"),
+              displayedIndicators.find((i) => i.category === "growth"),
+              displayedIndicators.find((i) => i.category === "housing"),
+              displayedIndicators.find((i) => i.category === "sentiment"),
+            ]
+              .filter(
+                (indicator): indicator is MacroIndicator =>
+                  indicator !== undefined
+              )
+              .slice(0, 6)
+              .map((indicator) => (
+                <div key={indicator.id} className="text-center">
+                  <div className="bg-gray-50 rounded-lg p-4 mb-3">
+                    <div className="text-xs text-gray-500 mb-1">
+                      {
+                        categories.find((c) => c.value === indicator.category)
+                          ?.label
+                      }
+                    </div>
+                    <h4 className="font-semibold text-gray-800 mb-2 text-sm">
+                      {indicator.name}
+                    </h4>
+                    <div className="text-xl font-bold text-blue-600">
+                      {indicator.value.toLocaleString()}
+                      {indicator.unit}
+                    </div>
+                    <div
+                      className={`text-sm mt-1 ${
+                        indicator.changeRate > 0
+                          ? "text-green-600"
+                          : indicator.changeRate < 0
+                          ? "text-red-600"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {indicator.changeRate > 0
+                        ? "↗"
                         : indicator.changeRate < 0
-                        ? "text-red-600"
-                        : "text-gray-600"
-                    }`}
-                  >
-                    {indicator.changeRate > 0
-                      ? "↗"
-                      : indicator.changeRate < 0
-                      ? "↘"
-                      : "→"}
-                    {Math.abs(indicator.changeRate).toFixed(2)}
-                    {indicator.unit}
+                        ? "↘"
+                        : "→"}
+                      {Math.abs(indicator.changeRate).toLocaleString()}
+                      {indicator.unit}
+                    </div>
                   </div>
+                  <p className="text-xs text-gray-500">
+                    다른 지표들과 {Math.floor(Math.random() * 30 + 60)}%
+                    상관관계
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500">
-                  다른 지표들과 {Math.floor(Math.random() * 30 + 60)}% 상관관계
-                </p>
-              </div>
-            ))}
+              ))}
+          </div>
+
+          {/* 상관관계 인사이트 */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-semibold text-blue-900 mb-2">
+              📊 상관관계 인사이트
+            </h4>
+            <div className="text-sm text-blue-800 space-y-1">
+              <p>
+                • 금리 상승은 일반적으로 주택시장과 역의 상관관계를 보입니다
+              </p>
+              <p>• 인플레이션과 에너지 가격은 높은 양의 상관관계를 가집니다</p>
+              <p>• 고용 지표는 소비자 신뢰지수와 강한 연관성을 보입니다</p>
+              <p>• 제조업 PMI는 GDP 성장률의 선행지표 역할을 합니다</p>
+            </div>
           </div>
         </section>
       </main>

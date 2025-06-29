@@ -7,7 +7,21 @@ export interface MacroIndicator {
   changeRate: number;
   updatedAt: string;
   unit: string;
-  category: 'interest-rate' | 'inflation' | 'employment' | 'energy' | 'currency' | 'growth';
+  category:
+    | "interest-rate"
+    | "inflation"
+    | "employment"
+    | "energy"
+    | "currency"
+    | "growth"
+    | "housing"
+    | "trade"
+    | "sentiment"
+    | "manufacturing"
+    | "government"
+    | "market";
+  frequency?: "daily" | "weekly" | "monthly" | "quarterly" | "irregular"; // 발표 주기
+  description?: string; // 지표 설명
 }
 
 // ETF 타입
@@ -22,7 +36,7 @@ export interface ETF {
   marketCap: number;
   expense: number;
   description: string;
-  risk: 'low' | 'medium' | 'high';
+  risk: "low" | "medium" | "high";
   correlationFactors: string[];
 }
 
@@ -34,11 +48,11 @@ export interface InvestmentStrategy {
   recommendedETFs: ETF[];
   macroConditions: {
     indicatorId: string;
-    condition: 'rising' | 'falling' | 'stable';
+    condition: "rising" | "falling" | "stable";
     threshold?: number;
   }[];
   expectedReturn: number;
-  riskLevel: 'low' | 'medium' | 'high';
+  riskLevel: "low" | "medium" | "high";
   createdAt: string;
 }
 
@@ -89,7 +103,7 @@ export interface UserSettings {
     portfolioRebalancing: boolean;
     macroIndicatorChanges: boolean;
   };
-  riskTolerance: 'conservative' | 'moderate' | 'aggressive';
-  investmentGoal: 'growth' | 'income' | 'balanced';
+  riskTolerance: "conservative" | "moderate" | "aggressive";
+  investmentGoal: "growth" | "income" | "balanced";
   premiumSubscription: boolean;
-} 
+}
