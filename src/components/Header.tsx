@@ -29,27 +29,25 @@ export default function Header({ currentPage = "home" }: HeaderProps) {
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4 sm:py-6">
-          <div className="flex items-center">
-            <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mr-2 sm:mr-3" />
-            <Link href="/">
+          <Link href="/">
+            <div className="flex items-center">
+              <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mr-2 sm:mr-3" />
+
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900 cursor-pointer">
                 MacroMatch
               </h1>
-            </Link>
-          </div>
+            </div>
+          </Link>
 
           {/* 데스크톱 네비게이션 */}
           <nav className="hidden md:flex space-x-8">
-            <Link href="/" className={getNavItemClass("home")}>
-              홈
-            </Link>
             <Link href="/analysis" className={getNavItemClass("analysis")}>
               지표 분석
             </Link>
             <Link href="/recommend" className={getNavItemClass("etf")}>
               ETF 추천
             </Link>
-            <Link href="#" className={getNavItemClass("strategy")}>
+            <Link href="/strategy" className={getNavItemClass("strategy")}>
               전략 시뮬레이터
             </Link>
             <Link href="#" className={getNavItemClass("profile")}>
@@ -95,13 +93,13 @@ export default function Header({ currentPage = "home" }: HeaderProps) {
               >
                 ETF 추천
               </Link>
-              <a
-                href="#"
+              <Link
+                href="/strategy"
                 className={getMobileNavItemClass("strategy")}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 전략 시뮬레이터
-              </a>
+              </Link>
               <a
                 href="#"
                 className={getMobileNavItemClass("profile")}
