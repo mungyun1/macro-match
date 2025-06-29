@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BarChart3, Menu, X } from "lucide-react";
 
-interface HeaderProps {
-  currentPage?: "home" | "analysis" | "etf" | "strategy" | "profile";
-}
+export default function Header() {
+  const pathname = usePathname();
+  const getCurrentPage = () => {
+    if (pathname === "/") return "home";
+    if (pathname.startsWith("/analysis")) return "analysis";
+    if (pathname.startsWith("/recommend")) return "etf";
+    if (pathname.startsWith("/strategy")) return "strategy";
+    return "home";
+  };
 
-export default function Header({ currentPage = "home" }: HeaderProps) {
+  const currentPage = getCurrentPage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const getNavItemClass = (page: string) => {
