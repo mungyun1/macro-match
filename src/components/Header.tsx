@@ -12,6 +12,7 @@ export default function Header() {
     if (pathname.startsWith("/analysis")) return "analysis";
     if (pathname.startsWith("/recommend")) return "etf";
     if (pathname.startsWith("/strategy")) return "strategy";
+    if (pathname.startsWith("/profile")) return "profile";
     return "home";
   };
 
@@ -57,7 +58,7 @@ export default function Header() {
             <Link href="/strategy" className={getNavItemClass("strategy")}>
               전략 시뮬레이터
             </Link>
-            <Link href="#" className={getNavItemClass("profile")}>
+            <Link href="/profile" className={getNavItemClass("profile")}>
               마이페이지
             </Link>
           </nav>
@@ -107,13 +108,13 @@ export default function Header() {
               >
                 전략 시뮬레이터
               </Link>
-              <a
-                href="#"
+              <Link
+                href="/profile"
                 className={getMobileNavItemClass("profile")}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 마이페이지
-              </a>
+              </Link>
             </nav>
           </div>
         )}
