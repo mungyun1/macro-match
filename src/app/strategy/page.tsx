@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useMacroStore } from "@/store/macroStore";
+import { useAIPrediction } from "@/hooks/useAIPrediction";
 import {
   Calculator,
   TrendingUp,
@@ -18,7 +19,7 @@ import {
   TrendingDown,
   Activity,
 } from "lucide-react";
-import { BacktestResult, ETF, PredictionResult } from "@/types";
+import { BacktestResult, ETF } from "@/types";
 
 import PortfolioPerformanceChart from "@/components/PortfolioPerformanceChart";
 
@@ -42,13 +43,17 @@ const defaultSettings: SimulationSettings = {
 
 export default function StrategySimulatorPage() {
   const { featuredETFs, fetchMacroData, isLoading } = useMacroStore();
+  const {
+    predictionResult,
+    isPredicting,
+    predictionError,
+    runPrediction: executePrediction,
+  } = useAIPrediction();
+
   const [settings, setSettings] = useState<SimulationSettings>(defaultSettings);
   const [simulationResult, setSimulationResult] =
     useState<BacktestResult | null>(null);
-  const [predictionResult, setPredictionResult] =
-    useState<PredictionResult | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [isPredicting, setIsPredicting] = useState(false);
   const [activeTab, setActiveTab] = useState<
     "setup" | "results" | "prediction"
   >("setup");
@@ -106,102 +111,14 @@ export default function StrategySimulatorPage() {
 
   // AI 예측 실행
   const runPrediction = async () => {
-    if (settings.selectedETFs.length === 0) {
-      alert("최소 1개 이상의 ETF를 선택해주세요.");
-      return;
-    }
-
-    const totalAllocation = Object.values(settings.allocation).reduce(
-      (sum, val) => sum + val,
-      0
-    );
-    if (Math.abs(totalAllocation - 100) > 0.1) {
-      alert("총 비중이 100%가 되도록 조정해주세요.");
-      return;
-    }
-
-    setIsPredicting(true);
+    // 백테스트와 동일하게 바로 탭 변경
     setActiveTab("prediction");
 
-    // AI 예측 분석 실행 (실제로는 ML 모델 API 호출)
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const success = await executePrediction(settings);
 
-    const mockPrediction: PredictionResult = {
-      strategyId: "custom-strategy-prediction",
-      predictionDate: new Date().toISOString().split("T")[0],
-      forecastPeriod: {
-        start: new Date().toISOString().split("T")[0],
-        end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split("T")[0],
-      },
-      confidence: 78,
-      keyFactors: [
-        "경제 성장률 둔화 예상",
-        "인플레이션 안정화 신호",
-        "중앙은행 금리 정책 변화",
-        "지정학적 리스크 완화",
-        "기업 실적 개선 기대",
-      ],
-      recommendations: [
-        "포트폴리오 다각화를 통한 리스크 분산 권장",
-        "성장주 비중 확대 고려",
-        "단기 변동성에 대비한 현금 비중 유지",
-        "섹터별 로테이션 전략 검토",
-      ],
-      trendAnalysis: {
-        shortTerm: "neutral",
-        mediumTerm: "bullish",
-        longTerm: "bullish",
-      },
-      scenarios: {
-        optimistic: generatePredictionScenario("optimistic", 0.25),
-        realistic: generatePredictionScenario("realistic", 0.12),
-        pessimistic: generatePredictionScenario("pessimistic", -0.05),
-      },
-    };
-
-    setPredictionResult(mockPrediction);
-    setIsPredicting(false);
-  };
-
-  // 예측 시나리오 데이터 생성
-  const generatePredictionScenario = (type: string, baseReturn: number) => {
-    const data = [];
-    const forecastDays = 365;
-    let value = settings.initialInvestment;
-
-    for (let i = 0; i <= forecastDays; i += 7) {
-      const currentDate = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
-
-      // 시나리오별 변동성 조정
-      const volatilityMultiplier =
-        type === "optimistic" ? 0.8 : type === "pessimistic" ? 1.3 : 1.0;
-      const volatility = 0.12 * volatilityMultiplier;
-      const trend = baseReturn / 365;
-
-      const noise = ((Math.random() - 0.5) * volatility) / Math.sqrt(365);
-      const dailyReturn = trend + noise;
-      value *= 1 + dailyReturn;
-
-      const uncertainty = Math.abs(baseReturn) * 0.15 * (i / forecastDays);
-
-      data.push({
-        date: currentDate.toISOString().split("T")[0],
-        value: Math.round(value),
-        upperBound: Math.round(value * (1 + uncertainty)),
-        lowerBound: Math.round(value * (1 - uncertainty)),
-      });
+    if (!success && predictionError) {
+      alert(predictionError);
     }
-
-    return {
-      expectedReturn: baseReturn * 100,
-      expectedVolatility: 15.2,
-      maxDrawdown:
-        type === "pessimistic" ? -28.5 : type === "optimistic" ? -8.2 : -15.7,
-      probability: type === "realistic" ? 60 : type === "optimistic" ? 25 : 15,
-      forecastData: data,
-    };
   };
 
   // 시뮬레이션 실행
