@@ -107,3 +107,50 @@ export interface UserSettings {
   investmentGoal: "growth" | "income" | "balanced";
   premiumSubscription: boolean;
 }
+
+// AI 예측 결과 타입
+export interface PredictionResult {
+  strategyId: string;
+  predictionDate: string;
+  forecastPeriod: {
+    start: string;
+    end: string;
+  };
+  scenarios: {
+    optimistic: PredictionScenario;
+    realistic: PredictionScenario;
+    pessimistic: PredictionScenario;
+  };
+  confidence: number; // 0-100 신뢰도
+  keyFactors: string[]; // 주요 영향 요인
+  recommendations: string[]; // AI 추천사항
+  trendAnalysis: {
+    shortTerm: "bullish" | "bearish" | "neutral";
+    mediumTerm: "bullish" | "bearish" | "neutral";
+    longTerm: "bullish" | "bearish" | "neutral";
+  };
+}
+
+// 시나리오별 예측 데이터
+export interface PredictionScenario {
+  expectedReturn: number;
+  expectedVolatility: number;
+  maxDrawdown: number;
+  probability: number; // 시나리오 발생 확률
+  forecastData: {
+    date: string;
+    value: number;
+    upperBound: number;
+    lowerBound: number;
+  }[];
+}
+
+// AI 모델 정보
+export interface AIModelInfo {
+  modelName: string;
+  version: string;
+  trainedOn: string;
+  accuracy: number;
+  lastUpdated: string;
+  features: string[]; // 사용된 특성들
+}
