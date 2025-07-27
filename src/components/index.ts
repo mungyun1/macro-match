@@ -11,6 +11,14 @@ export { default as MacroIndicatorCard } from "./MacroIndicatorCard";
 export { default as PortfolioPerformanceChart } from "./PortfolioPerformanceChart";
 export { default as StrategyHeader } from "./StrategyHeader";
 
+// Strategy components
+export { default as StrategyTabNavigation } from "./strategy/StrategyTabNavigation";
+export { default as StrategySetupSection } from "./strategy/StrategySetupSection";
+export { default as StrategyResultsSection } from "./strategy/StrategyResultsSection";
+export { default as StrategyPredictionSection } from "./strategy/StrategyPredictionSection";
+export { default as PerformanceSummary } from "./strategy/PerformanceSummary";
+export { default as StrategyDetails } from "./strategy/StrategyDetails";
+
 // 새로 분리된 컴포넌트들
 export { default as RecommendHeader } from "./RecommendHeader";
 export { default as MarketAnalysisCard } from "./MarketAnalysisCard";

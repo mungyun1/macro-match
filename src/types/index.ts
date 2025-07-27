@@ -156,3 +156,12 @@ export interface AIModelInfo {
   lastUpdated: string;
   features: string[]; // 사용된 특성들
 }
+
+export interface SimulationSettings {
+  startDate: string;
+  endDate: string;
+  initialInvestment: number;
+  rebalanceFrequency: "monthly" | "quarterly" | "yearly";
+  selectedETFs: ETF[];
+  allocation: { [key: string]: number };
+}
