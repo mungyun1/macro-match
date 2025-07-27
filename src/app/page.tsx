@@ -1,27 +1,31 @@
-"use client";
-
-import { useEffect } from "react";
-import { useMacroStore } from "@/store/macroStore";
 import MacroIndicatorCard from "@/components/MacroIndicatorCard";
-import ETFCard from "@/components/ETFCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import ErrorMessage from "@/components/ErrorMessage";
+import ETFCardWrapper from "@/components/ETFCardWrapper";
 import { BarChart3, TrendingUp, DollarSign } from "lucide-react";
+import { getMacroData } from "@/utils/macroDataService";
+import { MacroIndicator, ETF } from "@/types";
 
-export default function Home() {
-  const { indicators, featuredETFs, isLoading, error, fetchMacroData } =
-    useMacroStore();
+export default async function Home() {
+  let indicators: MacroIndicator[] = [];
+  let featuredETFs: ETF[] = [];
+  let error = null;
 
-  useEffect(() => {
-    fetchMacroData();
-  }, [fetchMacroData]);
-
-  if (isLoading) {
-    return <LoadingSpinner />;
+  try {
+    const data = await getMacroData();
+    indicators = data.indicators;
+    featuredETFs = data.featuredETFs;
+  } catch (err) {
+    error =
+      err instanceof Error ? err.message : "데이터를 불러오는데 실패했습니다.";
   }
 
   if (error) {
-    return <ErrorMessage message={error} onRetry={fetchMacroData} />;
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="text-center py-8">
+          <p className="text-red-500 text-sm sm:text-base">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -73,7 +77,7 @@ export default function Home() {
         {featuredETFs.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {featuredETFs.map((etf) => (
-              <ETFCard key={etf.id} etf={etf} />
+              <ETFCardWrapper key={etf.id} etf={etf} />
             ))}
           </div>
         ) : (

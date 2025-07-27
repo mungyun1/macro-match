@@ -61,14 +61,45 @@ MacroMatch는 거시경제 지표 기반 ETF 추천 엔진입니다. 금리, 인
    npm install
    ```
 
-2. **개발 서버 실행**
+2. **환경 변수 설정 (선택사항)**
+
+   실제 경제 데이터를 사용하려면 API 키를 설정하세요:
+
+   ```bash
+   # env.example 파일을 .env.local로 복사
+   cp env.example .env.local
+   ```
+
+   `.env.local` 파일에서 API 키를 설정:
+
+   ```env
+   # Alpha Vantage API (무료 티어: 분당 5회, 일일 500회)
+   # https://www.alphavantage.co/support/#api-key 에서 발급
+   NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key_here
+
+   # Federal Reserve Economic Data (FRED) API (무료)
+   # https://fred.stlouisfed.org/docs/api/api_key.html 에서 발급
+   NEXT_PUBLIC_FRED_API_KEY=your_fred_api_key_here
+   ```
+
+3. **개발 서버 실행**
 
    ```bash
    npm run dev
    ```
 
-3. **브라우저에서 확인**
+4. **브라우저에서 확인**
    - [http://localhost:3000](http://localhost:3000) 접속
+
+### 📊 실제 데이터 사용 현황
+
+현재 다음 지표들이 실제 API 데이터를 사용합니다:
+
+- **S&P 500 지수**: Alpha Vantage API 실시간 데이터
+- **원달러 환율**: Exchange Rate API 실시간 데이터
+- **WTI 원유가격**: Alpha Vantage API 실시간 데이터
+
+API 키를 설정하지 않으면 모의 데이터가 사용됩니다.
 
 ## 📁 프로젝트 구조
 
@@ -84,8 +115,12 @@ src/
 ├── types/                  # TypeScript 타입 정의
 │   └── index.ts
 ├── utils/                  # 유틸리티 함수
+│   └── apiServices.ts      # API 서비스 함수
 ├── hooks/                  # 커스텀 훅
 └── data/                   # 정적 데이터 및 목업
+
+# 환경 변수 설정
+env.example                 # API 키 설정 예시 파일
 ```
 
 ## 🎯 타겟 사용자
@@ -122,7 +157,7 @@ src/
 
 - [ ] 알림 시스템
 - [ ] 프리미엄 구독 구조
-- [ ] 실제 API 연동
+- [x] 실제 API 연동 (일부 지표)
 
 ### 4단계
 

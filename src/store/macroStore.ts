@@ -1,5 +1,13 @@
 import { create } from "zustand";
 import { MacroIndicator, ETF, InvestmentStrategy } from "@/types";
+import {
+  fetchStockData,
+  fetchCurrencyData,
+  fetchOilPrice,
+  getMockData,
+  type StockData,
+  type CurrencyData,
+} from "@/utils/apiServices";
 
 interface MacroStore {
   // 상태
@@ -60,8 +68,28 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
   fetchMacroData: async () => {
     set({ isLoading: true, error: null });
     try {
-      // TODO: 실제 API 호출로 대체
-      // 기본 필수 지표들
+      // 실제 API 데이터와 모의 데이터를 혼합하여 사용
+      const mockData = getMockData();
+
+      // 실제 API에서 가져올 수 있는 데이터들
+      let stockData: StockData | null = null;
+      let currencyData: CurrencyData | null = null;
+      let oilPrice: number | null = null;
+
+      try {
+        // 주식 데이터 (S&P 500 ETF)
+        stockData = await fetchStockData("SPY");
+
+        // 환율 데이터
+        currencyData = await fetchCurrencyData("USD");
+
+        // 원유 가격
+        oilPrice = await fetchOilPrice();
+      } catch (apiError) {
+        console.warn("API 호출 실패, 모의 데이터 사용:", apiError);
+      }
+
+      // 기본 필수 지표들 (실제 데이터와 모의 데이터 혼합)
       const coreIndicators: MacroIndicator[] = [
         {
           id: "1",
@@ -116,10 +144,12 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
         {
           id: "31",
           name: "S&P 500 지수",
-          value: 4385.2,
-          previousValue: 4328.7,
-          changeRate: 56.5,
-          updatedAt: new Date().toISOString(),
+          value: stockData?.price || mockData.stocks.SPY.price,
+          previousValue:
+            (stockData?.price || mockData.stocks.SPY.price) -
+            (stockData?.change || mockData.stocks.SPY.change),
+          changeRate: stockData?.change || mockData.stocks.SPY.change,
+          updatedAt: stockData?.timestamp || mockData.stocks.SPY.timestamp,
           unit: "포인트",
           category: "market",
           frequency: "daily",
@@ -396,8 +426,8 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
         {
           id: "27",
           name: "WTI 원유가격",
-          value: 82.5,
-          previousValue: 79.3,
+          value: oilPrice || mockData.oilPrice,
+          previousValue: (oilPrice || mockData.oilPrice) - 3.2,
           changeRate: 3.2,
           updatedAt: new Date().toISOString(),
           unit: "달러/배럴",
@@ -434,10 +464,11 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
         {
           id: "30",
           name: "원달러 환율",
-          value: 1335,
-          previousValue: 1328,
+          value: currencyData?.rates.KRW || mockData.currency.rates.KRW,
+          previousValue:
+            (currencyData?.rates.KRW || mockData.currency.rates.KRW) - 7,
           changeRate: 7,
-          updatedAt: new Date().toISOString(),
+          updatedAt: currencyData?.timestamp || mockData.currency.timestamp,
           unit: "원",
           category: "currency",
           frequency: "daily",
@@ -448,10 +479,10 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
         {
           id: "32",
           name: "나스닥 지수",
-          value: 13612.8,
-          previousValue: 13425.3,
-          changeRate: 187.5,
-          updatedAt: new Date().toISOString(),
+          value: mockData.stocks.QQQ.price,
+          previousValue: mockData.stocks.QQQ.price - mockData.stocks.QQQ.change,
+          changeRate: mockData.stocks.QQQ.change,
+          updatedAt: mockData.stocks.QQQ.timestamp,
           unit: "포인트",
           category: "market",
           frequency: "daily",

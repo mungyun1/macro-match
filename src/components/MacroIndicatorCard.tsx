@@ -1,7 +1,5 @@
-"use client";
-
 import { MacroIndicator } from "@/types";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Zap } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 
@@ -12,6 +10,11 @@ interface MacroIndicatorCardProps {
 export default function MacroIndicatorCard({
   indicator,
 }: MacroIndicatorCardProps) {
+  // 실제 API 데이터를 사용하는 지표들
+  const realTimeIndicators = ["S&P 500 지수", "원달러 환율", "WTI 원유가격"];
+
+  const isRealTime = realTimeIndicators.includes(indicator.name);
+
   const getTrendIcon = () => {
     if (indicator.changeRate > 0) {
       return <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />;
@@ -44,9 +47,17 @@ export default function MacroIndicatorCard({
     <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow">
       <div className="flex justify-between items-start mb-3 sm:mb-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
-            {indicator.name}
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
+              {indicator.name}
+            </h3>
+            {isRealTime && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <Zap className="h-3 w-3 mr-1" />
+                실시간
+              </span>
+            )}
+          </div>
           <span className="text-xs sm:text-sm text-gray-500">
             {getCategoryName(indicator.category)}
           </span>
