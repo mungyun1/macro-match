@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MacroMatch - 거시경제 기반 ETF 추천",
+  title: "MicroMatch - 거시경제 기반 ETF 추천",
   description: "거시경제 지표를 분석하여 최적의 ETF를 추천하는 서비스",
 };
 

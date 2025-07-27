@@ -15,7 +15,7 @@ export default async function Home() {
         <h2 className="text-4xl sm:text-5xl font-bold mb-4 px-2 leading-tight">
           <span className="text-gray-900">거시경제 흐름에 맞는</span>
           <br />
-          <span className="text-blue-600">ETF를 추천받으세요</span>
+          <span className="text-blue-600">ETF를 추천</span>받으세요
         </h2>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto px-4">
           금리, 인플레이션, 유가, 실업률 등 주요 거시경제 지표를 실시간으로
@@ -23,7 +23,7 @@ export default async function Home() {
         </p>
         <div className="mt-6 sm:mt-10">
           <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-4 px-8 sm:py-5 sm:px-12 rounded-full text-lg sm:text-xl transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer">
-            무료 시작하기
+            무료로 추천받기📊
           </button>
         </div>
       </section>
@@ -32,7 +32,11 @@ export default async function Home() {
       <section className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl shadow-lg p-6 sm:p-8 lg:p-12 border border-gray-100 mb-8 sm:mb-12">
         <div className="text-center mb-8 sm:mb-12">
           <h3 className="text-3xl font-bold text-gray-900 mb-4">
-            왜 MacroMatch를 선택해야 할까요?
+            왜{" "}
+            <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+              MicroMatch
+            </span>
+            를 선택해야 할까요?
           </h3>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             투자 목적과 위험 성향에 맞는 최적의 ETF를 찾아보세요. 검증된

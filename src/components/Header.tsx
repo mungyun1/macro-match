@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn");
+    setIsLoggedIn(loginStatus === "true");
+  }, []);
+
   const getCurrentPage = () => {
     if (pathname === "/") return "home";
     if (pathname.startsWith("/analysis")) return "analysis";
@@ -17,7 +26,15 @@ export default function Header() {
   };
 
   const currentPage = getCurrentPage();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 로그인 처리 함수
+  const handleLogin = () => {
+    if (!isLoggedIn) {
+      // 로그인 로직 (실제로는 API 호출 등이 들어갈 수 있음)
+      localStorage.setItem("isLoggedIn", "true");
+      setIsLoggedIn(true);
+    }
+  };
 
   const getNavItemClass = (page: string) => {
     if (currentPage === page) {
@@ -45,8 +62,8 @@ export default function Header() {
                   M
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white cursor-pointer">
-                MacroMatch
+              <h1 className="text-xl sm:text-2xl font-bold cursor-pointer bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                MicroMatch
               </h1>
             </div>
           </Link>
@@ -62,9 +79,6 @@ export default function Header() {
             <Link href="/strategy" className={getNavItemClass("strategy")}>
               전략 시뮬레이터
             </Link>
-            <Link href="/profile" className={getNavItemClass("profile")}>
-              마이페이지
-            </Link>
           </nav>
 
           {/* 우측 버튼들 */}
@@ -72,12 +86,21 @@ export default function Header() {
             <button className="p-2 text-white hover:text-white/80 transition-colors">
               <Globe className="h-5 w-5" />
             </button>
-            <button className="px-4 py-2 text-white border border-blue-400/60 rounded-md hover:bg-blue-400/10 hover:border-blue-400 transition-colors">
-              로그인
-            </button>
-            <button className="px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
-              무료 시작하기
-            </button>
+
+            {isLoggedIn ? (
+              <Link href="/profile">
+                <button className="px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
+                  마이 페이지
+                </button>
+              </Link>
+            ) : (
+              <button
+                onClick={handleLogin}
+                className="px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all"
+              >
+                로그인
+              </button>
+            )}
           </div>
 
           {/* 모바일 햄버거 메뉴 버튼 */}
@@ -141,12 +164,20 @@ export default function Header() {
                 마이페이지
               </Link>
               <div className="pt-4 border-t border-gray-700/50">
-                <button className="w-full px-4 py-2 text-white border border-blue-400/60 rounded-md hover:bg-blue-400/10 hover:border-blue-400 transition-colors mb-2">
-                  로그인
-                </button>
-                <button className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
-                  무료 시작하기
-                </button>
+                {isLoggedIn ? (
+                  <Link href="/profile">
+                    <button className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all mb-2">
+                      마이 페이지
+                    </button>
+                  </Link>
+                ) : (
+                  <button
+                    onClick={handleLogin}
+                    className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all mb-2"
+                  >
+                    로그인
+                  </button>
+                )}
               </div>
             </nav>
           </div>

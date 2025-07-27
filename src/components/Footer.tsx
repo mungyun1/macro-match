@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="text-sm sm:text-base">
-            &copy; 2024 MacroMatch. All rights reserved.
+            &copy; 2024 MicroMatch. All rights reserved.
           </p>
           <p className="text-gray-400 mt-2 text-xs sm:text-sm">
             거시경제 기반 ETF 추천 서비스
