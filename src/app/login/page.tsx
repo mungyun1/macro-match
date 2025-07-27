@@ -31,19 +31,17 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // 실제 로그인 API 호출이 들어갈 자리
-      // 예시: const response = await loginAPI(formData);
+      // 아무 값이나 입력하면 로그인 성공
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userEmail", formData.email || "user@example.com");
 
-      // 임시 로그인 로직 (실제로는 API 호출)
-      if (formData.email && formData.password) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userEmail", formData.email);
+      // 로그인 상태 변경 이벤트 발생
+      window.dispatchEvent(
+        new CustomEvent("loginStateChanged", { detail: { isLoggedIn: true } })
+      );
 
-        // 로그인 성공 후 홈페이지로 이동
-        router.push("/");
-      } else {
-        setError("이메일과 비밀번호를 모두 입력해주세요.");
-      }
+      // 로그인 성공 후 홈페이지로 이동
+      router.push("/");
     } catch {
       setError("로그인에 실패했습니다. 다시 시도해주세요.");
     } finally {

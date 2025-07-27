@@ -2,19 +2,65 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Globe } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Globe, User, LogOut } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 로그인 상태 확인
   useEffect(() => {
-    const loginStatus = localStorage.getItem("isLoggedIn");
-    setIsLoggedIn(loginStatus === "true");
+    const checkLoginStatus = () => {
+      const loginStatus = localStorage.getItem("isLoggedIn");
+      setIsLoggedIn(loginStatus === "true");
+    };
+
+    // 초기 로그인 상태 확인
+    checkLoginStatus();
+
+    // 로그인 상태 변경 감지를 위한 이벤트 리스너들
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "isLoggedIn") {
+        checkLoginStatus();
+      }
+    };
+
+    const handleLoginStateChange = (e: CustomEvent) => {
+      setIsLoggedIn(e.detail.isLoggedIn);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener(
+      "loginStateChanged",
+      handleLoginStateChange as EventListener
+    );
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "loginStateChanged",
+        handleLoginStateChange as EventListener
+      );
+    };
   }, []);
+
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userEmail");
+    setIsLoggedIn(false);
+
+    // 로그아웃 상태 변경 이벤트 발생
+    window.dispatchEvent(
+      new CustomEvent("loginStateChanged", { detail: { isLoggedIn: false } })
+    );
+
+    router.push("/");
+  };
 
   const getCurrentPage = () => {
     if (pathname === "/") return "home";
@@ -79,11 +125,20 @@ export default function Header() {
             </button>
 
             {isLoggedIn ? (
-              <Link href="/profile">
-                <button className="px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
-                  마이 페이지
+              <>
+                <Link href="/profile">
+                  <button className="p-2 text-white hover:text-white/80 transition-colors">
+                    <User className="h-5 w-5" />
+                  </button>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-white bg-gradient-to-r from-red-500/90 to-red-600/90 rounded-md hover:from-red-500 hover:to-red-600 transition-all flex items-center space-x-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>로그아웃</span>
                 </button>
-              </Link>
+              </>
             ) : (
               <Link href="/login">
                 <button className="cursor-pointer px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
@@ -155,11 +210,21 @@ export default function Header() {
               </Link>
               <div className="pt-4 border-t border-gray-700/50">
                 {isLoggedIn ? (
-                  <Link href="/profile">
-                    <button className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all mb-2">
-                      마이 페이지
+                  <>
+                    <Link href="/profile">
+                      <button className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all mb-2 flex items-center justify-center space-x-2">
+                        <User className="h-4 w-4" />
+                        <span>마이 페이지</span>
+                      </button>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-4 py-2 text-white bg-gradient-to-r from-red-500/90 to-red-600/90 rounded-md hover:from-red-500 hover:to-red-600 transition-all flex items-center justify-center space-x-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>로그아웃</span>
                     </button>
-                  </Link>
+                  </>
                 ) : (
                   <Link href="/login">
                     <button className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all mb-2">
