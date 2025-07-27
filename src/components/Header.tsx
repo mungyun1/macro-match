@@ -27,15 +27,6 @@ export default function Header() {
 
   const currentPage = getCurrentPage();
 
-  // 로그인 처리 함수
-  const handleLogin = () => {
-    if (!isLoggedIn) {
-      // 로그인 로직 (실제로는 API 호출 등이 들어갈 수 있음)
-      localStorage.setItem("isLoggedIn", "true");
-      setIsLoggedIn(true);
-    }
-  };
-
   const getNavItemClass = (page: string) => {
     if (currentPage === page) {
       return "text-white font-medium";
@@ -94,12 +85,11 @@ export default function Header() {
                 </button>
               </Link>
             ) : (
-              <button
-                onClick={handleLogin}
-                className="px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all"
-              >
-                로그인
-              </button>
+              <Link href="/login">
+                <button className="cursor-pointer px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
+                  로그인
+                </button>
+              </Link>
             )}
           </div>
 
@@ -171,12 +161,11 @@ export default function Header() {
                     </button>
                   </Link>
                 ) : (
-                  <button
-                    onClick={handleLogin}
-                    className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all mb-2"
-                  >
-                    로그인
-                  </button>
+                  <Link href="/login">
+                    <button className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all mb-2">
+                      로그인
+                    </button>
+                  </Link>
                 )}
               </div>
             </nav>
