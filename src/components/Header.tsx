@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Menu, X } from "lucide-react";
+import { Globe } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
@@ -21,27 +21,31 @@ export default function Header() {
 
   const getNavItemClass = (page: string) => {
     if (currentPage === page) {
-      return "text-blue-600 font-medium";
+      return "text-white font-medium";
     }
-    return "text-gray-600 hover:text-blue-600 transition-colors";
+    return "text-white/80 hover:text-white transition-colors";
   };
 
   const getMobileNavItemClass = (page: string) => {
     if (currentPage === page) {
-      return "text-blue-600 font-medium py-2 px-4 rounded-md bg-blue-50";
+      return "text-white font-medium py-2 px-4 rounded-md bg-white/10";
     }
-    return "text-gray-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-md hover:bg-gray-50";
+    return "text-white/80 hover:text-white transition-colors py-2 px-4 rounded-md hover:bg-white/10";
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-800/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4 sm:py-6">
+          {/* 로고 */}
           <Link href="/">
             <div className="flex items-center">
-              <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mr-2 sm:mr-3" />
-
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 cursor-pointer">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center mr-3">
+                <span className="text-white font-bold text-lg sm:text-xl">
+                  M
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-white cursor-pointer">
                 MacroMatch
               </h1>
             </div>
@@ -63,22 +67,43 @@ export default function Header() {
             </Link>
           </nav>
 
+          {/* 우측 버튼들 */}
+          <div className="hidden md:flex items-center space-x-4">
+            <button className="p-2 text-white hover:text-white/80 transition-colors">
+              <Globe className="h-5 w-5" />
+            </button>
+            <button className="px-4 py-2 text-white border border-blue-400/60 rounded-md hover:bg-blue-400/10 hover:border-blue-400 transition-colors">
+              로그인
+            </button>
+            <button className="px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
+              무료 시작하기
+            </button>
+          </div>
+
           {/* 모바일 햄버거 메뉴 버튼 */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors"
+            className="md:hidden p-2 rounded-md text-white hover:text-white/80 hover:bg-white/10 transition-colors"
           >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
           </button>
         </div>
 
         {/* 모바일 네비게이션 메뉴 */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-gray-700/50 py-4 bg-gray-900/95 backdrop-blur-md">
             <nav className="flex flex-col space-y-4">
               <Link
                 href="/"
@@ -115,6 +140,14 @@ export default function Header() {
               >
                 마이페이지
               </Link>
+              <div className="pt-4 border-t border-gray-700/50">
+                <button className="w-full px-4 py-2 text-white border border-blue-400/60 rounded-md hover:bg-blue-400/10 hover:border-blue-400 transition-colors mb-2">
+                  로그인
+                </button>
+                <button className="w-full px-4 py-2 text-white bg-gradient-to-r from-blue-400/90 to-purple-600/90 rounded-md hover:from-blue-400 hover:to-purple-600 transition-all">
+                  무료 시작하기
+                </button>
+              </div>
             </nav>
           </div>
         )}
