@@ -1,185 +1,120 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { CheckCircle } from "lucide-react";
 import { ETF } from "@/types";
-import {
-  TrendingUp,
-  TrendingDown,
-  Shield,
-  AlertTriangle,
-  Zap,
-} from "lucide-react";
 
 interface ETFCardProps {
   etf: ETF;
-  onSelect?: (etf: ETF) => void;
+  isSelected: boolean;
+  onToggle: (etf: ETF) => void;
 }
 
-export default function ETFCard({ etf, onSelect }: ETFCardProps) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    if (onSelect) {
-      onSelect(etf);
-    } else {
-      router.push(`/recommend/${etf.id}`);
-    }
-  };
-
-  const getRiskIcon = () => {
-    switch (etf.risk) {
-      case "low":
-        return <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />;
-      case "medium":
-        return (
-          <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
-        );
-      case "high":
-        return <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />;
-      default:
-        return null;
-    }
-  };
-
-  const getRiskLabel = () => {
-    const riskLabels = {
-      low: "낮음",
-      medium: "보통",
-      high: "높음",
-    };
-    return riskLabels[etf.risk];
-  };
-
-  const formatNumber = (num: number | null | undefined) => {
-    if (num == null || isNaN(num)) {
-      return "N/A";
-    }
-
-    if (num >= 1000000000) {
-      return `${(num / 1000000000).toFixed(1)}B`;
-    } else if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`;
-    } else if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K`;
-    }
-    return num.toLocaleString();
-  };
-
-  const formatPrice = (price: number | null | undefined) => {
-    if (price == null || isNaN(price)) {
-      return "N/A";
-    }
-    return `$${price.toFixed(2)}`;
-  };
-
-  const formatChangeRate = (changeRate: number | null | undefined) => {
-    if (changeRate == null || isNaN(changeRate)) {
-      return "N/A";
-    }
-    return `${changeRate >= 0 ? "+" : ""}${changeRate.toFixed(2)}%`;
-  };
-
-  const formatExpense = (expense: number | null | undefined) => {
-    if (expense == null || isNaN(expense)) {
-      return "N/A";
-    }
-    return `${expense}%`;
-  };
-
-  const getChangeRateColor = (changeRate: number | null | undefined) => {
-    if (changeRate == null || isNaN(changeRate)) {
-      return "text-gray-500";
-    }
-    return changeRate >= 0 ? "text-green-500" : "text-red-500";
-  };
-
-  const getChangeRateIcon = (changeRate: number | null | undefined) => {
-    if (changeRate == null || isNaN(changeRate)) {
-      return null;
-    }
-    return changeRate >= 0 ? (
-      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-    ) : (
-      <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-    );
-  };
-
+export default function ETFCard({ etf, isSelected, onToggle }: ETFCardProps) {
   return (
     <div
-      className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-all cursor-pointer border border-gray-200 hover:border-blue-300 active:scale-95"
-      onClick={handleClick}
+      className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md ${
+        isSelected
+          ? "border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-blue-100"
+          : "border-gray-100 hover:border-blue-200 hover:bg-gradient-to-br hover:from-blue-50/50 hover:to-white"
+      }`}
+      onClick={() => onToggle(etf)}
     >
-      <div className="flex justify-between items-start mb-3 sm:mb-4">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">
-            {etf.symbol}
-          </h3>
-          <p className="text-xs sm:text-sm text-gray-600 font-medium truncate">
+      {/* 선택 상태 표시 */}
+      <div className="absolute top-4 right-4">
+        <div
+          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+            isSelected
+              ? "bg-blue-500 border-blue-500 scale-110"
+              : "border-gray-300 hover:border-blue-400"
+          }`}
+        >
+          {isSelected && <CheckCircle className="w-4 h-4 text-white" />}
+        </div>
+      </div>
+
+      {/* ETF 심볼과 가격 변동 */}
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h3 className="text-xl font-bold text-gray-900 mb-1">{etf.symbol}</h3>
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
             {etf.name}
           </p>
-          <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-1">
-            {etf.category}
-          </span>
         </div>
-        <div className="flex items-center space-x-1 ml-2 flex-shrink-0">
-          {getRiskIcon()}
-          <span className="text-xs text-gray-500">{getRiskLabel()}</span>
-        </div>
-      </div>
-
-      <div className="mb-3 sm:mb-4">
-        <div className="flex items-baseline justify-between">
-          <div>
-            <span className="text-xl sm:text-2xl font-bold text-gray-900">
-              {formatPrice(etf.price)}
-            </span>
-            <div
-              className={`flex items-center mt-1 ${getChangeRateColor(
-                etf.changeRate
-              )}`}
+        {etf.changeRate !== null && (
+          <div className="text-right">
+            <span
+              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                etf.changeRate >= 0
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}
             >
-              {getChangeRateIcon(etf.changeRate)}
-              <span className="text-xs sm:text-sm font-medium">
-                {formatChangeRate(etf.changeRate)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-600">
-        <div className="flex justify-between">
-          <span>시가총액</span>
-          <span className="font-medium">${formatNumber(etf.marketCap)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>거래량</span>
-          <span className="font-medium">{formatNumber(etf.volume)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>운용비용</span>
-          <span className="font-medium">{formatExpense(etf.expense)}</span>
-        </div>
-      </div>
-
-      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100">
-        <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
-          {etf.description}
-        </p>
-
-        {etf.correlationFactors && etf.correlationFactors.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {etf.correlationFactors.slice(0, 3).map((factor, index) => (
-              <span
-                key={index}
-                className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
-              >
-                {factor}
-              </span>
-            ))}
+              {etf.changeRate >= 0 ? "+" : ""}
+              {etf.changeRate.toFixed(2)}%
+            </span>
           </div>
         )}
       </div>
+
+      {/* ETF 정보 그리드 */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* 카테고리 */}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            카테고리
+          </p>
+          <p className="text-sm font-semibold text-gray-900">{etf.category}</p>
+        </div>
+
+        {/* 위험도 */}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            위험도
+          </p>
+          <div className="flex items-center">
+            <span
+              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                etf.risk === "low"
+                  ? "bg-green-100 text-green-800"
+                  : etf.risk === "medium"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
+              {etf.risk === "low"
+                ? "낮음"
+                : etf.risk === "medium"
+                ? "보통"
+                : "높음"}
+            </span>
+          </div>
+        </div>
+
+        {/* 가격 */}
+        {etf.price !== null && (
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              현재가
+            </p>
+            <p className="text-lg font-bold text-gray-900">
+              ${etf.price.toFixed(2)}
+            </p>
+          </div>
+        )}
+
+        {/* 수수료 */}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            수수료
+          </p>
+          <p className="text-sm font-semibold text-gray-900">{etf.expense}%</p>
+        </div>
+      </div>
+
+      {/* 선택 상태 배경 효과 */}
+      {isSelected && (
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/5 rounded-xl pointer-events-none" />
+      )}
     </div>
   );
 }

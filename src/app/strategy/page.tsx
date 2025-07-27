@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useMacroStore } from "@/store/macroStore";
 import { useAIPrediction } from "@/hooks/useAIPrediction";
+import { useETFData } from "@/hooks/useETFData";
+import ETFSelectionSection from "@/components/ETFSelectionSection";
 import {
   Calculator,
   TrendingUp,
@@ -10,9 +12,7 @@ import {
   PlayCircle,
   BarChart3,
   DollarSign,
-  Target,
   AlertCircle,
-  CheckCircle,
   Brain,
   Zap,
   Lightbulb,
@@ -49,6 +49,11 @@ export default function StrategySimulatorPage() {
     predictionError,
     runPrediction: executePrediction,
   } = useAIPrediction();
+  const {
+    etfs: availableETFs,
+    loading: etfLoading,
+    error: etfError,
+  } = useETFData();
 
   const [settings, setSettings] = useState<SimulationSettings>(defaultSettings);
   const [simulationResult, setSimulationResult] =
@@ -61,6 +66,36 @@ export default function StrategySimulatorPage() {
   useEffect(() => {
     fetchMacroData();
   }, [fetchMacroData]);
+
+  // ETF 토글 핸들러
+  const handleToggleETF = (etf: ETF) => {
+    const isSelected = settings.selectedETFs.some(
+      (selected) => selected.id === etf.id
+    );
+
+    if (isSelected) {
+      // 선택 해제
+      setSettings({
+        ...settings,
+        selectedETFs: settings.selectedETFs.filter(
+          (selected) => selected.id !== etf.id
+        ),
+        allocation: Object.fromEntries(
+          Object.entries(settings.allocation).filter(([key]) => key !== etf.id)
+        ),
+      });
+    } else {
+      // 선택 추가
+      setSettings({
+        ...settings,
+        selectedETFs: [...settings.selectedETFs, etf],
+        allocation: {
+          ...settings.allocation,
+          [etf.id]: 0,
+        },
+      });
+    }
+  };
 
   // 비중 조정
   const updateAllocation = (etfId: string, percentage: number) => {
@@ -287,12 +322,13 @@ export default function StrategySimulatorPage() {
           </div>
 
           {/* ETF 선택 */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center mb-4">
-              <Target className="h-5 w-5 text-blue-600 mr-2" />
-              <h2 className="text-xl font-semibold text-gray-900">ETF 선택</h2>
-            </div>
-          </div>
+          <ETFSelectionSection
+            availableETFs={availableETFs}
+            selectedETFs={settings.selectedETFs}
+            loading={etfLoading}
+            error={etfError}
+            onToggleETF={handleToggleETF}
+          />
 
           {/* 비중 조정 */}
           {settings.selectedETFs.length > 0 && (
@@ -850,7 +886,7 @@ export default function StrategySimulatorPage() {
                         key={index}
                         className="flex items-start p-4 bg-yellow-50 rounded-lg border border-yellow-200"
                       >
-                        <CheckCircle className="h-5 w-5 text-yellow-600 mr-3 mt-0.5 flex-shrink-0" />
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
                         <span className="text-gray-700">{recommendation}</span>
                       </div>
                     )
