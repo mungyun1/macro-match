@@ -1,15 +1,14 @@
 // 무료 API를 사용한 실제 경제 데이터 서비스
 
 // Alpha Vantage API 키 (무료 티어: 분당 5회, 일일 500회)
-const ALPHA_VANTAGE_API_KEY =
-  process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY || "demo";
+const ALPHA_VANTAGE_API_KEY = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY;
 const ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query";
 
 // Exchange Rate API (무료)
 const EXCHANGE_RATE_BASE_URL = "https://api.exchangerate-api.com/v4/latest";
 
 // Federal Reserve Economic Data (FRED) API (무료)
-const FRED_API_KEY = process.env.NEXT_PUBLIC_FRED_API_KEY || "demo";
+const FRED_API_KEY = process.env.NEXT_PUBLIC_FRED_API_KEY;
 const FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations";
 
 export interface StockData {
@@ -39,6 +38,11 @@ export interface EconomicData {
 export async function fetchStockData(
   symbol: string
 ): Promise<StockData | null> {
+  if (!ALPHA_VANTAGE_API_KEY) {
+    console.warn("Alpha Vantage API 키가 설정되지 않았습니다.");
+    return null;
+  }
+
   try {
     const response = await fetch(
       `${ALPHA_VANTAGE_BASE_URL}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_API_KEY}`
@@ -99,6 +103,11 @@ export async function fetchCurrencyData(
 
 // 원유 가격 데이터 가져오기 (WTI)
 export async function fetchOilPrice(): Promise<number | null> {
+  if (!ALPHA_VANTAGE_API_KEY) {
+    console.warn("Alpha Vantage API 키가 설정되지 않았습니다.");
+    return null;
+  }
+
   try {
     const response = await fetch(
       `${ALPHA_VANTAGE_BASE_URL}?function=WTI&interval=daily&apikey=${ALPHA_VANTAGE_API_KEY}`
@@ -134,6 +143,11 @@ export async function fetchOilPrice(): Promise<number | null> {
 export async function fetchEconomicData(
   seriesId: string
 ): Promise<EconomicData | null> {
+  if (!FRED_API_KEY) {
+    console.warn("FRED API 키가 설정되지 않았습니다.");
+    return null;
+  }
+
   try {
     const response = await fetch(
       `${FRED_BASE_URL}?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=2`

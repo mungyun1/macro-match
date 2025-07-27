@@ -25,6 +25,7 @@ export default function ETFCard({ etf, onSelect }: ETFCardProps) {
       router.push(`/recommend/${etf.id}`);
     }
   };
+
   const getRiskIcon = () => {
     switch (etf.risk) {
       case "low":
@@ -49,7 +50,11 @@ export default function ETFCard({ etf, onSelect }: ETFCardProps) {
     return riskLabels[etf.risk];
   };
 
-  const formatNumber = (num: number) => {
+  const formatNumber = (num: number | null | undefined) => {
+    if (num == null || isNaN(num)) {
+      return "N/A";
+    }
+
     if (num >= 1000000000) {
       return `${(num / 1000000000).toFixed(1)}B`;
     } else if (num >= 1000000) {
@@ -58,6 +63,45 @@ export default function ETFCard({ etf, onSelect }: ETFCardProps) {
       return `${(num / 1000).toFixed(1)}K`;
     }
     return num.toLocaleString();
+  };
+
+  const formatPrice = (price: number | null | undefined) => {
+    if (price == null || isNaN(price)) {
+      return "N/A";
+    }
+    return `$${price.toFixed(2)}`;
+  };
+
+  const formatChangeRate = (changeRate: number | null | undefined) => {
+    if (changeRate == null || isNaN(changeRate)) {
+      return "N/A";
+    }
+    return `${changeRate >= 0 ? "+" : ""}${changeRate.toFixed(2)}%`;
+  };
+
+  const formatExpense = (expense: number | null | undefined) => {
+    if (expense == null || isNaN(expense)) {
+      return "N/A";
+    }
+    return `${expense}%`;
+  };
+
+  const getChangeRateColor = (changeRate: number | null | undefined) => {
+    if (changeRate == null || isNaN(changeRate)) {
+      return "text-gray-500";
+    }
+    return changeRate >= 0 ? "text-green-500" : "text-red-500";
+  };
+
+  const getChangeRateIcon = (changeRate: number | null | undefined) => {
+    if (changeRate == null || isNaN(changeRate)) {
+      return null;
+    }
+    return changeRate >= 0 ? (
+      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+    ) : (
+      <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+    );
   };
 
   return (
@@ -87,21 +131,16 @@ export default function ETFCard({ etf, onSelect }: ETFCardProps) {
         <div className="flex items-baseline justify-between">
           <div>
             <span className="text-xl sm:text-2xl font-bold text-gray-900">
-              ${etf.price.toFixed(2)}
+              {formatPrice(etf.price)}
             </span>
             <div
-              className={`flex items-center mt-1 ${
-                etf.changeRate >= 0 ? "text-green-500" : "text-red-500"
-              }`}
+              className={`flex items-center mt-1 ${getChangeRateColor(
+                etf.changeRate
+              )}`}
             >
-              {etf.changeRate >= 0 ? (
-                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-              ) : (
-                <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-              )}
+              {getChangeRateIcon(etf.changeRate)}
               <span className="text-xs sm:text-sm font-medium">
-                {etf.changeRate >= 0 ? "+" : ""}
-                {etf.changeRate.toFixed(2)}%
+                {formatChangeRate(etf.changeRate)}
               </span>
             </div>
           </div>
@@ -119,7 +158,7 @@ export default function ETFCard({ etf, onSelect }: ETFCardProps) {
         </div>
         <div className="flex justify-between">
           <span>운용비용</span>
-          <span className="font-medium">{etf.expense}%</span>
+          <span className="font-medium">{formatExpense(etf.expense)}</span>
         </div>
       </div>
 
@@ -128,7 +167,7 @@ export default function ETFCard({ etf, onSelect }: ETFCardProps) {
           {etf.description}
         </p>
 
-        {etf.correlationFactors.length > 0 && (
+        {etf.correlationFactors && etf.correlationFactors.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
             {etf.correlationFactors.slice(0, 3).map((factor, index) => (
               <span

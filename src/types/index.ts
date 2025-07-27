@@ -32,11 +32,11 @@ export interface ETF {
   symbol: string;
   name: string;
   category: string;
-  price: number;
-  changeRate: number;
-  volume: number;
-  marketCap: number;
-  expense: number;
+  price: number | null;
+  changeRate: number | null;
+  volume: number | null;
+  marketCap: number | null;
+  expense: number | null;
   description: string;
   risk: "low" | "medium" | "high";
   correlationFactors: string[];

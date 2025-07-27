@@ -17,6 +17,7 @@ MicroMatch는 거시경제 지표 기반 ETF 추천 엔진입니다. 금리, 인
 - 지표 변화에 따른 전략 매칭
 - 매칭 알고리즘 기반 추천 ETF 카드
 - ETF별 성과, 리스크 지표 제공
+- **실시간 ETF 데이터 연동** (Yahoo Finance, Alpha Vantage)
 
 ### 3. 전략 시뮬레이터
 
@@ -81,7 +82,9 @@ MicroMatch는 거시경제 지표 기반 ETF 추천 엔진입니다. 금리, 인
 
 ### 📊 실제 데이터 사용 현황
 
-현재 다음 지표들이 실제 API 데이터를 사용합니다:
+현재 다음 데이터들이 실제 API를 통해 제공됩니다:
+
+#### 거시경제 지표
 
 - **S&P 500 지수**: Alpha Vantage API 실시간 데이터
 - **원달러 환율**: Alpha Vantage API 실시간 데이터
@@ -90,11 +93,33 @@ MicroMatch는 거시경제 지표 기반 ETF 추천 엔진입니다. 금리, 인
 - **달러 인덱스**: Alpha Vantage API 실시간 데이터
 - **실업률**: Alpha Vantage API 실시간 데이터
 
-> 💡 API 호출 제한을 방지하기 위해 서버에서 1시간간 캐시됩니다
+#### ETF 데이터
 
-API 키를 설정하지 않거나 네트워크 연결에 문제가 있으면 데이터를 불러올 수 없습니다.
+- **실시간 가격**: Yahoo Finance API (무료, API 키 불필요)
+- **백업 데이터**: Alpha Vantage API (무료 티어: 분당 5회, 일일 500회)
+- **지원 ETF**: SPY, QQQ, TLT, GLD, VTI, VEA, VWO, BND, VNQ, XLE 등 10개 주요 ETF
 
-**💡 API 호출 제한 방지**: 서버에서 1시간간 캐시하여 API 호출 횟수를 최적화합니다.
+> 💡 **데이터 캐싱**: API 호출 제한을 방지하기 위해 ETF 데이터는 5분간 캐시됩니다
+
+### 🔑 API 키 설정
+
+#### Alpha Vantage API (선택사항)
+
+1. [Alpha Vantage](https://www.alphavantage.co/support/#api-key)에서 무료 API 키 발급
+2. `.env.local` 파일에 추가:
+   ```
+   NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY=your_api_key_here
+   ```
+
+#### FRED API (선택사항)
+
+1. [FRED](https://fred.stlouisfed.org/docs/api/api_key.html)에서 무료 API 키 발급
+2. `.env.local` 파일에 추가:
+   ```
+   NEXT_PUBLIC_FRED_API_KEY=your_api_key_here
+   ```
+
+> **참고**: API 키를 설정하지 않아도 Yahoo Finance API를 통해 ETF 데이터는 정상적으로 제공됩니다.
 
 ## 📁 프로젝트 구조
 
@@ -113,7 +138,12 @@ src/
 ├── types/                  # TypeScript 타입 정의
 │   └── index.ts
 ├── utils/                  # 유틸리티 함수
+│   ├── apiServices.ts      # 거시경제 데이터 API
+│   ├── etfDataService.ts   # ETF 데이터 API
+│   └── ...
 ├── hooks/                  # 커스텀 훅
+│   ├── useETFData.ts       # ETF 데이터 관리 훅
+│   └── ...
 └── data/                   # 정적 데이터 및 목업
 
 # 환경 변수 설정
@@ -132,7 +162,7 @@ env.example                 # API 키 설정 예시 파일
 
 - **홈**: 현재 거시지표 요약 + 대표 ETF 추천
 - **지표 분석**: 개별 지표별 상세 설명, 추세 차트
-- **ETF 추천**: 조건 선택형/자동 추천형 제공
+- **ETF 추천**: 조건 선택형/자동 추천형 제공 (실시간 데이터)
 - **전략 시뮬레이터**: 사용자 조합 전략 백테스트
 - **마이페이지**: 저장한 전략, 알림 설정, 구독 관리
 
@@ -143,6 +173,8 @@ env.example                 # API 키 설정 예시 파일
 - [x] 거시지표 대시보드
 - [x] ETF 추천 카드 (룰 기반)
 - [x] 기본 UI/UX 구성
+- [x] 실제 API 연동 (일부 지표)
+- [x] **실시간 ETF 데이터 연동**
 
 ### 2단계
 
@@ -154,7 +186,7 @@ env.example                 # API 키 설정 예시 파일
 
 - [ ] 알림 시스템
 - [ ] 프리미엄 구독 구조
-- [x] 실제 API 연동 (일부 지표)
+- [ ] 더 많은 ETF 지원
 
 ### 4단계
 

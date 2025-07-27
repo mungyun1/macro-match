@@ -42,7 +42,7 @@ const defaultSettings: SimulationSettings = {
 };
 
 export default function StrategySimulatorPage() {
-  const { featuredETFs, fetchMacroData, isLoading } = useMacroStore();
+  const { fetchMacroData } = useMacroStore();
   const {
     predictionResult,
     isPredicting,
@@ -61,42 +61,6 @@ export default function StrategySimulatorPage() {
   useEffect(() => {
     fetchMacroData();
   }, [fetchMacroData]);
-
-  // ETF 선택/해제
-  const toggleETFSelection = (etf: ETF) => {
-    const isSelected = settings.selectedETFs.some(
-      (selected) => selected.id === etf.id
-    );
-
-    if (isSelected) {
-      const newSelectedETFs = settings.selectedETFs.filter(
-        (selected) => selected.id !== etf.id
-      );
-      const newAllocation = { ...settings.allocation };
-      delete newAllocation[etf.id];
-
-      setSettings({
-        ...settings,
-        selectedETFs: newSelectedETFs,
-        allocation: newAllocation,
-      });
-    } else {
-      const newSelectedETFs = [...settings.selectedETFs, etf];
-      const equalWeight = Math.round(100 / newSelectedETFs.length);
-      const newAllocation = { ...settings.allocation };
-
-      // 기존 비중 재조정
-      newSelectedETFs.forEach((selectedETF) => {
-        newAllocation[selectedETF.id] = equalWeight;
-      });
-
-      setSettings({
-        ...settings,
-        selectedETFs: newSelectedETFs,
-        allocation: newAllocation,
-      });
-    }
-  };
 
   // 비중 조정
   const updateAllocation = (etfId: string, percentage: number) => {
@@ -328,59 +292,6 @@ export default function StrategySimulatorPage() {
               <Target className="h-5 w-5 text-blue-600 mr-2" />
               <h2 className="text-xl font-semibold text-gray-900">ETF 선택</h2>
             </div>
-
-            {isLoading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-gray-600">
-                  ETF 데이터를 불러오는 중...
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {featuredETFs.map((etf) => {
-                  const isSelected = settings.selectedETFs.some(
-                    (selected) => selected.id === etf.id
-                  );
-                  return (
-                    <div
-                      key={etf.id}
-                      onClick={() => toggleETFSelection(etf)}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        isSelected
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-gray-900">
-                          {etf.symbol}
-                        </h3>
-                        {isSelected && (
-                          <CheckCircle className="h-5 w-5 text-blue-600" />
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{etf.name}</p>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">
-                          가격: ${etf.price}
-                        </span>
-                        <span
-                          className={`font-medium ${
-                            etf.changeRate >= 0
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {etf.changeRate >= 0 ? "+" : ""}
-                          {etf.changeRate}%
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
 
           {/* 비중 조정 */}

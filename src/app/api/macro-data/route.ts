@@ -7,7 +7,7 @@ let lastFetchTime: number = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1시간 캐시
 
 // 외부 API
-const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
+const ALPHA_VANTAGE_API_KEY = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY;
 
 // S&P 500 데이터 가져오기
 async function fetchSP500Data() {
