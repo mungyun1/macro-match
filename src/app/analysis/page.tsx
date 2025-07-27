@@ -39,21 +39,14 @@ export default function AnalysisPage() {
       selectedCategory === "all" || indicator.category === selectedCategory
   );
 
-  // 카테고리 목록
+  // 카테고리 목록 (실제 데이터만)
   const categories = [
     { value: "all", label: "전체" },
-    { value: "interest-rate", label: "금리" },
-    { value: "inflation", label: "인플레이션" },
-    { value: "employment", label: "고용" },
-    { value: "growth", label: "성장" },
-    { value: "housing", label: "주택" },
-    { value: "manufacturing", label: "제조업" },
-    { value: "trade", label: "무역" },
-    { value: "sentiment", label: "시장심리" },
-    { value: "government", label: "정부재정" },
-    { value: "energy", label: "에너지" },
-    { value: "currency", label: "통화" },
     { value: "market", label: "주식시장" },
+    { value: "currency", label: "통화" },
+    { value: "energy", label: "에너지" },
+    { value: "interest-rate", label: "금리" },
+    { value: "employment", label: "고용" },
   ];
 
   // 기간 옵션
@@ -125,6 +118,48 @@ export default function AnalysisPage() {
     return <ErrorMessage message={error} onRetry={fetchMacroData} />;
   }
 
+  // 데이터가 없는 경우
+  if (!displayedIndicators || displayedIndicators.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
+            <h1 className="text-3xl font-bold text-gray-900">지표 분석</h1>
+          </div>
+        </div>
+
+        <div className="p-8 text-center">
+          <div className="mb-4">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            데이터를 불러오는 데 실패했습니다
+          </h3>
+          <p className="text-gray-600 mb-4">다시 시도해주세요.</p>
+          <button
+            onClick={fetchMacroData}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            다시 시도
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <div className="mb-8">
@@ -164,16 +199,65 @@ export default function AnalysisPage() {
                 <p>
                   • <strong>S&P 500 지수</strong>: Alpha Vantage API 실시간
                   데이터
+                  {displayedIndicators.find((i) => i.id === "sp500")
+                    ?.isRealTime && (
+                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                      실시간
+                    </span>
+                  )}
                 </p>
                 <p>
-                  • <strong>원달러 환율</strong>: Exchange Rate API 실시간
+                  • <strong>원달러 환율</strong>: Alpha Vantage API 실시간
                   데이터
+                  {displayedIndicators.find((i) => i.id === "usdkrw")
+                    ?.isRealTime && (
+                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                      실시간
+                    </span>
+                  )}
                 </p>
                 <p>
                   • <strong>WTI 원유가격</strong>: Alpha Vantage API 실시간
                   데이터
+                  {displayedIndicators.find((i) => i.id === "wti")
+                    ?.isRealTime && (
+                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                      실시간
+                    </span>
+                  )}
                 </p>
-                <p>• 기타 지표들은 모의 데이터로 표시됩니다</p>
+                <p>
+                  • <strong>10년 국채 수익률</strong>: Alpha Vantage API 실시간
+                  데이터
+                  {displayedIndicators.find((i) => i.id === "treasury-yield")
+                    ?.isRealTime && (
+                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                      실시간
+                    </span>
+                  )}
+                </p>
+                <p>
+                  • <strong>달러 인덱스</strong>: Alpha Vantage API 실시간
+                  데이터
+                  {displayedIndicators.find((i) => i.id === "dollar-index")
+                    ?.isRealTime && (
+                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                      실시간
+                    </span>
+                  )}
+                </p>
+                <p>
+                  • <strong>실업률</strong>: Alpha Vantage API 실시간 데이터
+                  {displayedIndicators.find((i) => i.id === "unemployment-rate")
+                    ?.isRealTime && (
+                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                      실시간
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-blue-600 mt-2">
+                  💡 API 호출 제한을 방지하기 위해 서버에서 1시간간 캐시됩니다
+                </p>
               </div>
             </div>
           </div>

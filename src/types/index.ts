@@ -5,7 +5,8 @@ export interface MacroIndicator {
   value: number;
   previousValue: number;
   changeRate: number;
-  updatedAt: string;
+  updatedAt?: string; // 기존 호환성을 위해 optional로 변경
+  lastUpdated?: string; // 새로운 필드
   unit: string;
   category:
     | "interest-rate"
@@ -22,6 +23,7 @@ export interface MacroIndicator {
     | "market";
   frequency?: "daily" | "weekly" | "monthly" | "quarterly" | "irregular"; // 발표 주기
   description?: string; // 지표 설명
+  isRealTime?: boolean; // 실시간 데이터 여부
 }
 
 // ETF 타입

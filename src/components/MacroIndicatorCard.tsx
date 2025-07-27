@@ -10,10 +10,8 @@ interface MacroIndicatorCardProps {
 export default function MacroIndicatorCard({
   indicator,
 }: MacroIndicatorCardProps) {
-  // 실제 API 데이터를 사용하는 지표들
-  const realTimeIndicators = ["S&P 500 지수", "원달러 환율", "WTI 원유가격"];
-
-  const isRealTime = realTimeIndicators.includes(indicator.name);
+  // 실시간 데이터 여부 확인
+  const isRealTime = indicator.isRealTime || false;
 
   const getTrendIcon = () => {
     if (indicator.changeRate > 0) {
@@ -89,9 +87,13 @@ export default function MacroIndicatorCard({
 
       <div className="text-xs text-gray-400">
         업데이트:{" "}
-        {format(new Date(indicator.updatedAt), "yyyy.MM.dd HH:mm", {
-          locale: ko,
-        })}
+        {format(
+          new Date(indicator.updatedAt || indicator.lastUpdated || new Date()),
+          "yyyy.MM.dd HH:mm",
+          {
+            locale: ko,
+          }
+        )}
       </div>
     </div>
   );

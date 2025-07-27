@@ -70,18 +70,6 @@ MicroMatch는 거시경제 지표 기반 ETF 추천 엔진입니다. 금리, 인
    cp env.example .env.local
    ```
 
-   `.env.local` 파일에서 API 키를 설정:
-
-   ```env
-   # Alpha Vantage API (무료 티어: 분당 5회, 일일 500회)
-   # https://www.alphavantage.co/support/#api-key 에서 발급
-   NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key_here
-
-   # Federal Reserve Economic Data (FRED) API (무료)
-   # https://fred.stlouisfed.org/docs/api/api_key.html 에서 발급
-   NEXT_PUBLIC_FRED_API_KEY=your_fred_api_key_here
-   ```
-
 3. **개발 서버 실행**
 
    ```bash
@@ -96,16 +84,26 @@ MicroMatch는 거시경제 지표 기반 ETF 추천 엔진입니다. 금리, 인
 현재 다음 지표들이 실제 API 데이터를 사용합니다:
 
 - **S&P 500 지수**: Alpha Vantage API 실시간 데이터
-- **원달러 환율**: Exchange Rate API 실시간 데이터
+- **원달러 환율**: Alpha Vantage API 실시간 데이터
 - **WTI 원유가격**: Alpha Vantage API 실시간 데이터
+- **10년 국채 수익률**: Alpha Vantage API 실시간 데이터
+- **달러 인덱스**: Alpha Vantage API 실시간 데이터
+- **실업률**: Alpha Vantage API 실시간 데이터
 
-API 키를 설정하지 않으면 모의 데이터가 사용됩니다.
+> 💡 API 호출 제한을 방지하기 위해 서버에서 1시간간 캐시됩니다
+
+API 키를 설정하지 않거나 네트워크 연결에 문제가 있으면 데이터를 불러올 수 없습니다.
+
+**💡 API 호출 제한 방지**: 서버에서 1시간간 캐시하여 API 호출 횟수를 최적화합니다.
 
 ## 📁 프로젝트 구조
 
 ```
 src/
 ├── app/                    # Next.js App Router 페이지
+│   ├── api/                # API 라우트
+│   │   └── macro-data/     # 매크로 데이터 API
+│   └── ...
 ├── components/             # 재사용 가능한 컴포넌트
 │   ├── MacroIndicatorCard.tsx
 │   ├── ETFCard.tsx
@@ -115,7 +113,6 @@ src/
 ├── types/                  # TypeScript 타입 정의
 │   └── index.ts
 ├── utils/                  # 유틸리티 함수
-│   └── apiServices.ts      # API 서비스 함수
 ├── hooks/                  # 커스텀 훅
 └── data/                   # 정적 데이터 및 목업
 
