@@ -69,14 +69,22 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
   fetchMacroData: async () => {
     set({ isLoading: true, error: null });
     try {
+      console.log("거시경제 데이터 로딩 시작...");
+
       // 새로운 API 엔드포인트에서 데이터 가져오기
-      const response = await fetch("/api/macro-data");
+      const response = await fetch("/api/macro-data", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result: MacroDataResponse = await response.json();
+      console.log("API 응답:", result);
 
       if (!result.success) {
         throw new Error(result.error || "데이터를 가져오는데 실패했습니다.");
@@ -89,32 +97,60 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
           item.lastUpdated || item.updatedAt || new Date().toISOString(),
       }));
 
+      console.log("변환된 거시경제 데이터:", macroData);
+
       // 기본 지표들 (실시간 데이터 포함)
       const coreIndicators = macroData.filter((indicator: MacroIndicator) =>
         [
           "sp500",
           "usdkrw",
           "wti",
-          "fed-funds-rate",
-          "cpi",
+          "treasury-yield",
+          "dollar-index",
           "unemployment-rate",
-          "gdp-growth",
         ].includes(indicator.id)
       );
 
-      // 추가 가능한 지표들
-      const additionalIndicators = macroData.filter(
-        (indicator: MacroIndicator) =>
-          ![
-            "sp500",
-            "usdkrw",
-            "wti",
-            "fed-funds-rate",
-            "cpi",
-            "unemployment-rate",
-            "gdp-growth",
-          ].includes(indicator.id)
-      );
+      // 추가 지표들 (정적 데이터)
+      const additionalIndicators: MacroIndicator[] = [
+        {
+          id: "fed-funds-rate",
+          name: "연방기금금리",
+          value: 5.25,
+          previousValue: 5.0,
+          changeRate: 0.25,
+          updatedAt: new Date().toISOString(),
+          unit: "%",
+          category: "interest-rate",
+          frequency: "irregular",
+          description: "연방준비제도 이사회(Fed)에서 결정하는 정책금리",
+        },
+        {
+          id: "cpi",
+          name: "소비자물가지수(CPI)",
+          value: 3.2,
+          previousValue: 3.7,
+          changeRate: -0.5,
+          updatedAt: new Date().toISOString(),
+          unit: "%",
+          category: "inflation",
+          frequency: "monthly",
+          description:
+            "소비자가 구매하는 상품과 서비스의 가격 변동을 측정하는 지표",
+        },
+        {
+          id: "gdp-growth",
+          name: "GDP 성장률",
+          value: 2.1,
+          previousValue: 1.8,
+          changeRate: 0.3,
+          updatedAt: new Date().toISOString(),
+          unit: "%",
+          category: "growth",
+          frequency: "quarterly",
+          description: "국내총생산의 전년 동기 대비 성장률",
+        },
+      ];
 
       // ETF 데이터 (기존 모의 데이터 유지)
       const mockETFs: ETF[] = [
@@ -149,12 +185,18 @@ export const useMacroStore = create<MacroStore>((set, get) => ({
       ];
 
       set({
-        indicators: coreIndicators,
+        indicators: [...coreIndicators, ...additionalIndicators],
         availableIndicators: additionalIndicators,
         featuredETFs: mockETFs,
         isLoading: false,
       });
+
+      console.log("거시경제 데이터 로딩 완료:", [
+        ...coreIndicators,
+        ...additionalIndicators,
+      ]);
     } catch (error) {
+      console.error("거시경제 데이터 로딩 실패:", error);
       set({
         error:
           error instanceof Error
