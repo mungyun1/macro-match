@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useMacroStore } from "@/store/macroStore";
 import { useAIPrediction } from "@/hooks/useAIPrediction";
-import { useETFData } from "@/hooks/useETFData";
+import { useETFStore } from "@/store/etfStore";
 import { useStrategySimulator } from "@/hooks/useStrategySimulator";
 import {
   StrategyHeader,
@@ -23,9 +23,10 @@ export default function StrategySimulatorPage() {
   } = useAIPrediction();
   const {
     etfs: availableETFs,
-    loading: etfLoading,
+    isLoading: etfLoading,
     error: etfError,
-  } = useETFData();
+    fetchETFs,
+  } = useETFStore();
 
   const {
     settings,
@@ -40,7 +41,8 @@ export default function StrategySimulatorPage() {
 
   useEffect(() => {
     fetchMacroData();
-  }, [fetchMacroData]);
+    fetchETFs();
+  }, [fetchMacroData, fetchETFs]);
 
   // AI 예측 실행
   const runPrediction = async () => {

@@ -61,7 +61,13 @@ async function fetchETFDataFromYahoo(
 ): Promise<ETFMarketData | null> {
   try {
     const response = await fetch(
-      `${YAHOO_FINANCE_BASE_URL}/${symbol}?interval=1d&range=1d`
+      `${YAHOO_FINANCE_BASE_URL}/${symbol}?interval=1d&range=1d`,
+      {
+        next: {
+          revalidate: 3600, // 1시간마다 재검증
+          tags: [`etf-${symbol}`], // 태그로 캐시 관리
+        },
+      }
     );
 
     if (!response.ok) {

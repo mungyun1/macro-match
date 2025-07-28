@@ -10,12 +10,12 @@ import RecommendFilters from "@/components/recommend/RecommendFilters";
 import RecommendStats from "@/components/recommend/RecommendStats";
 import Pagination from "@/components/recommend/Pagination";
 import EmptyResults from "@/components/recommend/EmptyResults";
-import { useETFData } from "@/hooks/useETFData";
+import { useETFStore } from "@/store/etfStore";
 import { useRecommendFilters } from "@/hooks/useRecommendFilters";
 
 export default function RecommendPage() {
   const router = useRouter();
-  const { etfs: allETFs, loading, error, lastUpdated } = useETFData();
+  const { etfs: allETFs, isLoading, error, fetchETFs } = useETFStore();
 
   const {
     filters,
@@ -30,12 +30,17 @@ export default function RecommendPage() {
     resetFilters,
   } = useRecommendFilters({ etfs: allETFs });
 
+  // ETF 데이터 로드
+  useEffect(() => {
+    fetchETFs();
+  }, [fetchETFs]);
+
   // 에러 발생 시 404 페이지로 리다이렉트
   useEffect(() => {
-    if (error && !loading) {
+    if (error && !isLoading) {
       router.push("/404");
     }
-  }, [error, loading, router]);
+  }, [error, isLoading, router]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -61,11 +66,10 @@ export default function RecommendPage() {
         totalCount={sortedETFs.length}
         currentPage={filters.currentPage}
         totalPages={totalPages}
-        lastUpdated={lastUpdated || undefined}
       />
 
       {/* ETF 카드 그리드 */}
-      {loading ? (
+      {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {Array.from({ length: 6 }).map((_, index) => (
             <ETFCardSkeleton key={index} />
@@ -87,7 +91,7 @@ export default function RecommendPage() {
           />
         </>
       ) : (
-        !loading && <EmptyResults onReset={resetFilters} />
+        !isLoading && <EmptyResults onReset={resetFilters} />
       )}
     </div>
   );

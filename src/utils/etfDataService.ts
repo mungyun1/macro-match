@@ -1,4 +1,5 @@
 // ETF 실제 데이터 서비스
+import { cache } from "react";
 import { ETF } from "@/types";
 
 // 내부 API 라우트 (CORS 문제 해결)
@@ -26,7 +27,13 @@ export async function fetchETFData(
 ): Promise<ETFMarketData | null> {
   try {
     const response = await fetch(
-      `${ETF_API_BASE_URL}?symbol=${symbol}&source=yahoo`
+      `${ETF_API_BASE_URL}?symbol=${symbol}&source=yahoo`,
+      {
+        next: {
+          revalidate: 3600, // 1시간마다 재검증
+          tags: [`etf-${symbol}`], // 태그로 캐시 관리
+        },
+      }
     );
 
     if (!response.ok) {
@@ -453,8 +460,8 @@ export function createCompleteETF(
   };
 }
 
-// 추천 ETF 목록 가져오기
-export async function fetchRecommendedETFs(): Promise<ETF[]> {
+// 추천 ETF 목록 가져오기 (캐시 적용)
+export const fetchRecommendedETFs = cache(async (): Promise<ETF[]> => {
   const symbols = Object.keys(ETF_BASE_INFO);
   const marketData = await fetchMultipleETFData(symbols);
 
@@ -468,4 +475,4 @@ export async function fetchRecommendedETFs(): Promise<ETF[]> {
   }
 
   return etfs;
-}
+});
