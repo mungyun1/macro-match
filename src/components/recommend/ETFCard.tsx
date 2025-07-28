@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ETF } from "@/types";
 
 interface ETFCardProps {
@@ -7,8 +8,17 @@ interface ETFCardProps {
 }
 
 export default function ETFCard({ etf }: ETFCardProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/recommend/${etf.id}`);
+  };
+
   return (
-    <div className="relative p-6 border-2 border-gray-100 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:border-blue-200 hover:bg-gradient-to-br hover:from-blue-50/50 hover:to-white">
+    <div
+      className="relative p-6 border-2 border-gray-100 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:border-blue-200 hover:bg-gradient-to-br hover:from-blue-50/50 hover:to-white cursor-pointer"
+      onClick={handleClick}
+    >
       {/* ETF 심볼과 가격 변동 */}
       <div className="flex items-start justify-between mb-4">
         <div>

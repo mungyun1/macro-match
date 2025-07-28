@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import ETFCard from "@/components/recommend/ETFCard";
 import ETFCardSkeleton from "@/components/recommend/ETFCardSkeleton";
 import RecommendHeader from "@/components/recommend/RecommendHeader";
@@ -13,6 +14,7 @@ import { useETFData } from "@/hooks/useETFData";
 import { useRecommendFilters } from "@/hooks/useRecommendFilters";
 
 export default function RecommendPage() {
+  const router = useRouter();
   const { etfs: allETFs, loading, error, lastUpdated } = useETFData();
 
   const {
@@ -28,24 +30,16 @@ export default function RecommendPage() {
     resetFilters,
   } = useRecommendFilters({ etfs: allETFs });
 
+  // 에러 발생 시 404 페이지로 리다이렉트
+  useEffect(() => {
+    if (error && !loading) {
+      router.push("/404");
+    }
+  }, [error, loading, router]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <RecommendHeader />
-
-      {/* 에러 메시지 */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
-          <div className="flex items-start">
-            <AlertCircle className="h-5 w-5 text-red-600 mt-1 mr-3 flex-shrink-0" />
-            <div>
-              <h3 className="text-sm font-medium text-red-800 mb-1">
-                데이터 로드 실패
-              </h3>
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       <MarketAnalysisCard />
 

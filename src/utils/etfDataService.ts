@@ -2,7 +2,12 @@
 import { ETF } from "@/types";
 
 // 내부 API 라우트 (CORS 문제 해결)
-const ETF_API_BASE_URL = "/api/etf-data";
+const ETF_API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? `${
+        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+      }/api/etf-data`
+    : "http://localhost:3000/api/etf-data";
 
 // ETF 데이터 인터페이스
 export interface ETFMarketData {
@@ -247,100 +252,4 @@ export async function fetchRecommendedETFs(): Promise<ETF[]> {
   }
 
   return etfs;
-}
-
-// 모의 데이터 (API 호출 실패시 사용)
-export function getMockETFData(): ETF[] {
-  return [
-    {
-      id: "SPY",
-      symbol: "SPY",
-      name: "SPDR S&P 500 ETF Trust",
-      category: "대형주",
-      price: 450.23,
-      changeRate: 1.2,
-      volume: 45000000,
-      marketCap: 400000000000,
-      expense: 0.0945,
-      description:
-        "S&P 500 지수를 추적하는 대표적인 ETF로, 미국 대형주 500개에 분산투자할 수 있습니다.",
-      risk: "medium",
-      correlationFactors: ["금리", "성장률"],
-    },
-    {
-      id: "QQQ",
-      symbol: "QQQ",
-      name: "Invesco QQQ Trust",
-      category: "기술주",
-      price: 380.15,
-      changeRate: 2.3,
-      volume: 35000000,
-      marketCap: 180000000000,
-      expense: 0.2,
-      description:
-        "나스닥 100 지수를 추적하는 ETF로, 기술주 중심의 성장주에 투자합니다.",
-      risk: "high",
-      correlationFactors: ["성장률", "기술혁신"],
-    },
-    {
-      id: "TLT",
-      symbol: "TLT",
-      name: "iShares 20+ Year Treasury Bond ETF",
-      category: "장기채권",
-      price: 89.45,
-      changeRate: -0.8,
-      volume: 12000000,
-      marketCap: 15000000000,
-      expense: 0.15,
-      description:
-        "20년 이상 미국 국채에 투자하는 ETF로, 금리 하락시 수익률이 높습니다.",
-      risk: "low",
-      correlationFactors: ["금리", "인플레이션"],
-    },
-    {
-      id: "GLD",
-      symbol: "GLD",
-      name: "SPDR Gold Shares",
-      category: "원자재",
-      price: 185.67,
-      changeRate: 0.5,
-      volume: 8000000,
-      marketCap: 55000000000,
-      expense: 0.4,
-      description:
-        "금 현물 가격을 추적하는 ETF로, 인플레이션 헤지 수단으로 활용됩니다.",
-      risk: "medium",
-      correlationFactors: ["인플레이션", "달러"],
-    },
-    {
-      id: "VTI",
-      symbol: "VTI",
-      name: "Vanguard Total Stock Market ETF",
-      category: "전체주식시장",
-      price: 245.78,
-      changeRate: 1.1,
-      volume: 2800000,
-      marketCap: 1200000000000,
-      expense: 0.03,
-      description:
-        "미국 전체 주식시장을 추적하는 ETF로, 대형주부터 소형주까지 포괄적으로 투자합니다.",
-      risk: "medium",
-      correlationFactors: ["성장률", "경기순환"],
-    },
-    {
-      id: "BND",
-      symbol: "BND",
-      name: "Vanguard Total Bond Market ETF",
-      category: "채권",
-      price: 78.92,
-      changeRate: -0.3,
-      volume: 1500000,
-      marketCap: 95000000000,
-      expense: 0.035,
-      description:
-        "미국 전체 채권시장을 추적하는 ETF로, 안정적인 수익을 추구합니다.",
-      risk: "low",
-      correlationFactors: ["금리", "인플레이션"],
-    },
-  ];
 }
