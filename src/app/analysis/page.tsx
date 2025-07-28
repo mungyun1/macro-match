@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useMacroStore } from "@/store/macroStore";
-import MacroIndicatorCard from "@/components/MacroIndicatorCard";
-import MacroChart from "@/components/MacroChart";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import ErrorMessage from "@/components/ErrorMessage";
+import MacroIndicatorCard from "@/components/analysis/MacroIndicatorCard";
+import MacroChart from "@/components/analysis/MacroChart";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import ErrorMessage from "@/components/common/ErrorMessage";
 import { TrendingUp, Filter, Calendar, Target, BarChart3 } from "lucide-react";
 import { MacroIndicator, ChartData } from "@/types";
 

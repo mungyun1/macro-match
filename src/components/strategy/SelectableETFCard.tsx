@@ -3,13 +3,17 @@
 import { CheckCircle } from "lucide-react";
 import { ETF } from "@/types";
 
-interface ETFCardProps {
+interface SelectableETFCardProps {
   etf: ETF;
   isSelected: boolean;
   onToggle: (etf: ETF) => void;
 }
 
-export default function ETFCard({ etf, isSelected, onToggle }: ETFCardProps) {
+export default function SelectableETFCard({
+  etf,
+  isSelected,
+  onToggle,
+}: SelectableETFCardProps) {
   return (
     <div
       className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md ${
@@ -102,14 +106,41 @@ export default function ETFCard({ etf, isSelected, onToggle }: ETFCardProps) {
           </div>
         )}
 
-        {/* 수수료 */}
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-            수수료
-          </p>
-          <p className="text-sm font-semibold text-gray-900">{etf.expense}%</p>
-        </div>
+        {/* 거래량 */}
+        {etf.volume !== null && (
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              거래량
+            </p>
+            <p className="text-sm font-semibold text-gray-900">
+              {etf.volume.toLocaleString()}
+            </p>
+          </div>
+        )}
       </div>
+
+      {/* 수수료 */}
+      {etf.expense !== null && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              수수료
+            </span>
+            <span className="text-sm font-semibold text-gray-900">
+              {etf.expense}%
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* 설명 */}
+      {etf.description && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+            {etf.description}
+          </p>
+        </div>
+      )}
 
       {/* 선택 상태 배경 효과 */}
       {isSelected && (

@@ -1,5 +1,5 @@
 import { Calculator } from "lucide-react";
-import PortfolioPerformanceChart from "@/components/PortfolioPerformanceChart";
+import PortfolioPerformanceChart from "@/components/strategy/PortfolioPerformanceChart";
 import PerformanceSummary from "./PerformanceSummary";
 import StrategyDetails from "./StrategyDetails";
 import { BacktestResult, SimulationSettings } from "@/types";

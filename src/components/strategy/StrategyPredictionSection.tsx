@@ -6,12 +6,12 @@ import {
   AlertCircle,
   Lightbulb,
 } from "lucide-react";
-import PortfolioPerformanceChart from "@/components/PortfolioPerformanceChart";
-import { SimulationSettings } from "@/types";
+import PortfolioPerformanceChart from "@/components/strategy/PortfolioPerformanceChart";
+import { SimulationSettings, PredictionResult } from "@/types";
 
 interface StrategyPredictionSectionProps {
   isPredicting: boolean;
-  predictionResult: any; // AI 예측 결과 타입
+  predictionResult: PredictionResult | null;
   settings: SimulationSettings;
   onGoToSetup: () => void;
 }
@@ -334,7 +334,12 @@ export default function StrategyPredictionSection({
         </h2>
         <PortfolioPerformanceChart
           performanceData={predictionResult.scenarios.realistic.forecastData.map(
-            (data: any) => ({
+            (data: {
+              date: string;
+              value: number;
+              upperBound: number;
+              lowerBound: number;
+            }) => ({
               date: data.date,
               value: data.value,
             })

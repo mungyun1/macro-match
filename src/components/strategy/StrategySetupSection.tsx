@@ -1,5 +1,5 @@
 import { Settings, BarChart3, PlayCircle, Zap } from "lucide-react";
-import ETFSelectionSection from "@/components/ETFSelectionSection";
+import ETFSelectionSection from "@/components/strategy/ETFSelectionSection";
 import { SimulationSettings, ETF } from "@/types";
 
 interface StrategySetupSectionProps {

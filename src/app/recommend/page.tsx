@@ -1,14 +1,14 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
-import ETFCard from "@/components/ETFCard";
-import ETFCardSkeleton from "@/components/ETFCardSkeleton";
-import RecommendHeader from "@/components/RecommendHeader";
-import MarketAnalysisCard from "@/components/MarketAnalysisCard";
-import RecommendFilters from "@/components/RecommendFilters";
-import RecommendStats from "@/components/RecommendStats";
-import Pagination from "@/components/Pagination";
-import EmptyResults from "@/components/EmptyResults";
+import ETFCard from "@/components/recommend/ETFCard";
+import ETFCardSkeleton from "@/components/recommend/ETFCardSkeleton";
+import RecommendHeader from "@/components/recommend/RecommendHeader";
+import MarketAnalysisCard from "@/components/recommend/MarketAnalysisCard";
+import RecommendFilters from "@/components/recommend/RecommendFilters";
+import RecommendStats from "@/components/recommend/RecommendStats";
+import Pagination from "@/components/recommend/Pagination";
+import EmptyResults from "@/components/recommend/EmptyResults";
 import { useETFData } from "@/hooks/useETFData";
 import { useRecommendFilters } from "@/hooks/useRecommendFilters";
 

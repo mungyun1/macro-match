@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Target, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { ETF } from "@/types";
-import ETFCard from "./ETFCard";
-import ETFCardSkeleton from "./ETFCardSkeleton";
+import SelectableETFCard from "./SelectableETFCard";
+import ETFCardSkeleton from "../recommend/ETFCardSkeleton";
 
 interface ETFSelectionSectionProps {
   availableETFs: ETF[];
@@ -62,7 +62,7 @@ export default function ETFSelectionSection({
                 (selected) => selected.id === etf.id
               );
               return (
-                <ETFCard
+                <SelectableETFCard
                   key={etf.id}
                   etf={etf}
                   isSelected={isSelected}
